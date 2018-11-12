@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\User;..\..\Libraries\CMSIS;..\..\Libraries\FWlib\inc;..\..\User\lcd;..\..\User\helper;..\..\User\stm</IncludePath>
+              <IncludePath>..\..\User;..\..\Libraries\CMSIS;..\..\Libraries\FWlib\inc;..\..\User\lcd;..\..\User\helper;..\..\User\stm;..\..\User\panels</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
