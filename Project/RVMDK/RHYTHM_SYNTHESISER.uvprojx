@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\User;..\..\Libraries\CMSIS;..\..\Libraries\FWlib\inc;..\..\User\lcd</IncludePath>
+              <IncludePath>..\..\User;..\..\Libraries\CMSIS;..\..\Libraries\FWlib\inc;..\..\User\lcd;..\..\User\helper;..\..\User\stm</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -525,14 +525,9 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
-              <FileName>stm32f10x_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\stm32f10x_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\main.c</FilePath>
+              <FileName>ascii.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\lcd\ascii.h</FilePath>
             </File>
             <File>
               <FileName>lcd.c</FileName>
@@ -545,9 +540,19 @@
               <FilePath>..\..\User\lcd\lcd.h</FilePath>
             </File>
             <File>
-              <FileName>ascii.h</FileName>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>helper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\helper\helper.c</FilePath>
+            </File>
+            <File>
+              <FileName>helper.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\lcd\ascii.h</FilePath>
+              <FilePath>..\..\User\helper\helper.h</FilePath>
             </File>
           </Files>
         </Group>
