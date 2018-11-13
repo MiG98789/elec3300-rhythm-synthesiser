@@ -29,6 +29,7 @@
 #include "stm32f10x_exti.h"
 #include "lcd.h"
 #include "helper.h"
+#include "pattern.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -174,7 +175,9 @@ void CLK_Pulse(int duration) {
   * @retval None
   */
 void EXTI0_IRQHandler(void) {
-	int i = 0;
+	uint8_t buttonRawIndex = 0;
+	uint8_t buttonMapIndex = 0;
+	uint8_t inputDataBit = 0;
 	uint16_t result = 0;
 	char output[17];
 	
@@ -196,11 +199,14 @@ void EXTI0_IRQHandler(void) {
 		GPIO_WriteBit(GPIOB, GPIO_Pin_7, HIGH);
 		
 		// 5) 16-for loop, each time do step 3 and read QH
-		for (i = 0; i < 16; i++) {
-			result = result << 1;
-			result |= GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
+		for (buttonRawIndex = 0; buttonRawIndex < 16; buttonRawIndex++) {
+			inputDataBit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
 			
-			output[i] = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6) + '0';
+			result = result << 1;
+			result |= inputDataBit;
+			
+			buttonMapIndex = PATTERN_BUTTON_MAPPING[buttonRawIndex];
+			output[buttonMapIndex] = inputDataBit + '0';
 
 			CLK_Pulse(10000);
 		}
