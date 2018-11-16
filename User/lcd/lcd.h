@@ -98,6 +98,7 @@ void                     LCD_DrawLine                ( uint16_t usC1, uint16_t u
 void                     LCD_DrawChar             	 ( uint16_t usC, uint16_t usP, const char cChar);
 void                     LCD_DrawString           	 ( uint16_t usC, uint16_t usP, const char * pStr);
 void 										 LCD_DrawCircle							 ( uint16_t usC, uint16_t usP, uint16_t R, uint16_t usColor);
+void                     LCD_DrawHex                 ( uint16_t usC, uint16_t usP, uint32_t x );
 
 
 

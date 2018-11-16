@@ -1,5 +1,7 @@
 #include "lcd.h"
-#include "ascii.h"	
+#include "ascii.h"
+
+#include <stdio.h>
 
 
 static void                   LCD_GPIO_Config         ( void );
@@ -574,3 +576,9 @@ void LCD_DrawCircle ( uint16_t usC, uint16_t usP, uint16_t R, uint16_t usColor)
 	
 }
 
+void LCD_DrawHex (uint16_t usC, uint16_t usP, uint32_t x)
+{
+  char str[11];
+  sprintf(str, "0x%x", x);
+  LCD_DrawString(usC, usP, str);
+}
