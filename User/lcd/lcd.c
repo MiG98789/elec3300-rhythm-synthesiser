@@ -563,8 +563,8 @@ void LCD_DrawDot(uint16_t usCOLUMN, uint16_t usPAGE, uint16_t usColor)
 	/*
 	 *  Task 2 – Implement the LCD_DrawDot to turn on a particular dot on the LCD.
 	 */
-
-		
+  LCD_OpenWindow(usCOLUMN, usPAGE, 1, 1);
+  LCD_FillColor(1, usColor);
 }
 
 //Task 3
@@ -580,5 +580,12 @@ void LCD_DrawHex (uint16_t usC, uint16_t usP, uint32_t x)
 {
   char str[11];
   sprintf(str, "0x%x", x);
+  LCD_DrawString(usC, usP, str);
+}
+
+void LCD_DrawDec (uint16_t usC, uint16_t usP, uint32_t x)
+{
+  char str[11];
+  sprintf(str, "%d", x);
   LCD_DrawString(usC, usP, str);
 }
