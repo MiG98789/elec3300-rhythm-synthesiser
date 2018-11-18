@@ -5,8 +5,11 @@
 #include "misc.h"
 
 #include "lcd.h"
+#include "drum_samples.h"
 
 #include <math.h>
+
+uint16_t x;
 
 #define M_PI 3.14159265358979323846
 
@@ -14,20 +17,15 @@ void GPIOA_INIT(void);
 void TIM6_INIT(void);
 void TIM7_INIT(void);
 void DAC1_INIT(void);
-void WAV_INIT(void);
 void DMA2_Channel3_INIT(void);
-
-uint16_t WAV[100];
 
 int main(void)
 {
-  WAV_INIT();
   GPIOA_INIT();
   DMA2_Channel3_INIT();
   DAC1_INIT();
   TIM6_INIT();
   TIM7_INIT();
-  LCD_INIT();
   while (1);
 }
 
@@ -51,15 +49,14 @@ void TIM6_INIT(void) {
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
   TIM_TimeBaseInit(TIM6, &TIM_TimeBaseInitStruct);
   TIM_SelectOutputTrigger(TIM6, TIM_TRGOSource_Update);
-  TIM_Cmd(TIM6, ENABLE);
 }
 
 void TIM7_INIT(void) {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
   NVIC_InitTypeDef NVIC_InitStruct;
 
-  TIM_TimeBaseInitStruct.TIM_Period = 6000;
-  TIM_TimeBaseInitStruct.TIM_Prescaler = 6000;
+  TIM_TimeBaseInitStruct.TIM_Period = 60000 - 1;
+  TIM_TimeBaseInitStruct.TIM_Prescaler = 1200 - 1;
   TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
   TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
   
@@ -87,45 +84,56 @@ void DAC1_INIT(void) {
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
   DAC_Init(DAC_Channel_1, &DAC_InitStruct);
   DAC_DMACmd(DAC_Channel_1, ENABLE);
+  DAC_SetChannel1Data(DAC_Align_12b_R, 2048);
   DAC_Cmd(DAC_Channel_1, ENABLE);
-}
-
-void WAV_INIT(void) {
-  int i = 0;
-  for (i = 0; i < 100; ++i)
-    WAV[i] = 2047 * sin(i * 2 * M_PI / 100) + 2047;
 }
 
 void DMA2_Channel3_INIT(void) {
   DMA_InitTypeDef DMA_InitStruct;
   NVIC_InitTypeDef NVIC_InitStruct;
+
+  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
   
   DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t) &DAC->DHR12R1;
-  DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t) &WAV;
+  DMA_InitStruct.DMA_MemoryBaseAddr = 0;
   DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralDST;
-  DMA_InitStruct.DMA_BufferSize = 100;
+  DMA_InitStruct.DMA_BufferSize = 17216;
   DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
   DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-  DMA_InitStruct.DMA_Mode = DMA_Mode_Circular;
+  DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
   DMA_InitStruct.DMA_Priority = DMA_Priority_High;
   DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
+  DMA_Init(DMA2_Channel3, &DMA_InitStruct);
+  DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, ENABLE);
+  DMA_Cmd(DMA2_Channel3, ENABLE);
   
   NVIC_InitStruct.NVIC_IRQChannel = DMA2_Channel3_IRQn;
   NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStruct.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
-  DMA_Init(DMA2_Channel3, &DMA_InitStruct);
-  DMA_Cmd(DMA2_Channel3, ENABLE);
   NVIC_Init(&NVIC_InitStruct);
 }
 
 void TIM7_IRQHandler(void) {
-  if (!TIM_GetITStatus(TIM7, TIM_IT_Update))
-    return;
-  LCD_DrawDec(0, 0x00, DAC_GetDataOutputValue(DAC_Channel_1));
-  TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
+  if (TIM_GetITStatus(TIM7, TIM_IT_Update)) {
+    static int i = 0;
+    DMA_Cmd(DMA2_Channel3, DISABLE);
+    DMA2_Channel3->CMAR = (uint32_t) DRUM_DATA[i];
+    DMA2_Channel3->CNDTR = DRUM_SIZE[i];
+    DMA_Cmd(DMA2_Channel3, ENABLE);
+    TIM_Cmd(TIM6, ENABLE);
+    i = (i + 1) & 0x7;
+    TIM_ClearITPendingBit(TIM7, TIM_IT_Update);
+  }
+}
+
+void DMA2_Channel3_IRQHandler(void) {
+  if (DMA_GetITStatus(DMA2_IT_TC3)) {
+    TIM_Cmd(TIM6, DISABLE);
+    DMA_Cmd(DMA2_Channel3, DISABLE);
+    DAC_SetChannel1Data(DAC_Align_12b_R, 2048);
+    DMA_ClearITPendingBit(DMA2_IT_TC3);
+  }
 }

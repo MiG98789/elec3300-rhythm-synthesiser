@@ -559,6 +559,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\User\stm\stm32f10x_it.c</FilePath>
             </File>
+            <File>
+              <FileName>drum_samples.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drum_samples.c</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
