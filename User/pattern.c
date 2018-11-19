@@ -64,6 +64,6 @@ void readPatternButtons(void) {
   // XOR to detect change, AND to block falling edge, XOR to toggle
   xorResult = currResult ^ prevResult;
   andResult = currResult & xorResult;
-  pattern[0] ^= andResult;
+  pattern[currInstrument] ^= andResult;
   prevResult = currResult;
 }

@@ -4,5 +4,6 @@
 #include <stdint.h>
 
 extern volatile uint16_t pattern[8];
+extern volatile uint8_t currInstrument;
 
 #endif
