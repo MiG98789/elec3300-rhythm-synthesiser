@@ -5,9 +5,12 @@
 #include "stm32f10x_gpio.h"
 
 #include "helper.h"
+#include "global.h"
 #include "lcd.h"
 
-const int PATTERN_BUTTON_MAPPING[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
+const uint8_t PATTERN_BUTTON_MAPPING[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
+
+uint16_t prevResult = 0;
 
 static void CLK_Pulse(int duration) {
   GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_SET);
@@ -21,6 +24,9 @@ void readPatternButtons(void) {
 	uint8_t buttonMapIndex = 0;
 	uint8_t inputDataBit = 0;
 	char output[17];
+  
+  uint16_t xorResult = 0;
+  uint16_t andResult = 0;
 
   // CLK:   PB5
   // QH:    PB6
@@ -52,4 +58,12 @@ void readPatternButtons(void) {
   }
   output[16] = '\0';
   LCD_DrawString(10, 10, output);
+  
+  // Compare with prevResult
+  // XOR prevResult and currResult, then AND the XOR value and currResult, then XOR the AND pattern
+  // XOR to detect change, AND to block falling edge, XOR to toggle
+  xorResult = currResult ^ prevResult;
+  andResult = currResult & xorResult;
+  pattern[0] ^= andResult;
+  prevResult = currResult;
 }

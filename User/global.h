@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-volatile uint16_t pattern[8] = { 0x1111 };
+extern volatile uint16_t pattern[8];
 
 #endif
