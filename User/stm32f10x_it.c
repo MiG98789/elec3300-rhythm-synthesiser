@@ -24,12 +24,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-#include <stdio.h>
 #include "stm32f10x_it.h"
-#include "stm32f10x_exti.h"
-#include "lcd.h"
-#include "helper.h"
-#include "pattern.h"
 
 /** @addtogroup STM32F10x_StdPeriph_Template
   * @{
@@ -161,61 +156,6 @@ void SysTick_Handler(void)
 
 /**
   * @}
-  */ 
-
-void CLK_Pulse(int duration) {
-		GPIO_WriteBit(GPIOB, GPIO_Pin_5, HIGH);
-		Delayus(duration);
-		GPIO_WriteBit(GPIOB, GPIO_Pin_5, LOW);
-}
-
-/**
-  * @brief  This handles EXTI_0 IRQ 
-  * @param  None
-  * @retval None
   */
-void EXTI0_IRQHandler(void) {
-	uint8_t buttonRawIndex = 0;
-	uint8_t buttonMapIndex = 0;
-	uint8_t inputDataBit = 0;
-	uint16_t result = 0;
-	char output[17];
-	
-	if (EXTI_GetITStatus(EXTI_Line0) != RESET) {				
-		// SH/LD: PB7
-		// CLK:   PB5
-		// QH:    PB6
-		
-		// Set CLK to low
-		GPIO_WriteBit(GPIOB, GPIO_Pin_5, LOW);
-		
-		// 2) Set SH/LD to low
-		GPIO_WriteBit(GPIOB, GPIO_Pin_7, LOW);
-		
-		// 3) Set CLK to high, delayus, CLK to low
-		CLK_Pulse(10000);
-		
-		// 4) Set SH/LD to high
-		GPIO_WriteBit(GPIOB, GPIO_Pin_7, HIGH);
-		
-		// 5) 16-for loop, each time do step 3 and read QH
-		for (buttonRawIndex = 0; buttonRawIndex < 16; buttonRawIndex++) {
-			inputDataBit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
-			
-			result = result << 1;
-			result |= inputDataBit;
-			
-			buttonMapIndex = PATTERN_BUTTON_MAPPING[buttonRawIndex];
-			output[buttonMapIndex] = inputDataBit + '0';
-
-			CLK_Pulse(10000);
-		}
-		output[16] = '\0';
-		LCD_DrawString(10, 10, output);
-
-	/* Clear the Key Button EXTI line pending bit */
-		EXTI_ClearITPendingBit(EXTI_Line0);
-	}
-}
 
 /******************* (C) COPYRIGHT 2011 STMicroelectronics *****END OF FILE****/
