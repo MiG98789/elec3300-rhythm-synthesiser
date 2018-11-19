@@ -11,10 +11,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 void TIM3_IRQHandler(void) {	
-	if (TIM_GetITStatus(TIM3, TIM_IT_Update) != RESET) {
+	if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
     readPatternButtons();
 
-	/* Clear the Key Button EXTI line pending bit */
+	/* Clear the pending bit */
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 }

@@ -23,7 +23,6 @@ void readPatternButtons(void) {
   uint8_t buttonRawIndex = 0;
 	uint8_t buttonMapIndex = 0;
 	uint8_t inputDataBit = 0;
-	char output[17];
   
   uint16_t xorResult = 0;
   uint16_t andResult = 0;
@@ -48,16 +47,12 @@ void readPatternButtons(void) {
   for (; buttonRawIndex < 16; buttonRawIndex++) {
     inputDataBit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
 
-    currResult = currResult << 1;
-    currResult |= inputDataBit;
-
     buttonMapIndex = PATTERN_BUTTON_MAPPING[buttonRawIndex];
-    output[buttonMapIndex] = inputDataBit + '0';
+    currResult |= inputDataBit << (15 - buttonMapIndex);
 
     CLK_Pulse(10000);
   }
-  output[16] = '\0';
-  LCD_DrawString(10, 10, output);
+  LCD_DrawBin(0, 0, currResult);
   
   // Compare with prevResult
   // XOR prevResult and currResult, then AND the XOR value and currResult, then XOR the AND pattern
@@ -66,4 +61,5 @@ void readPatternButtons(void) {
   andResult = currResult & xorResult;
   pattern[currInstrument] ^= andResult;
   prevResult = currResult;
+  LCD_DrawBin(0, 0x10, pattern[currInstrument]);
 }

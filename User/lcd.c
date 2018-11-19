@@ -589,3 +589,13 @@ void LCD_DrawDec (uint16_t usC, uint16_t usP, uint32_t x)
   sprintf(str, "%d", x);
   LCD_DrawString(usC, usP, str);
 }
+
+void LCD_DrawBin (uint16_t usC, uint16_t usP, uint16_t x)
+{
+  int i;
+  char str[17];
+  for (i = 0; i < 16; ++i)
+    str[i] = '0' + ((x & (1 << (15 - i))) >> (15 - i));
+  str[16] = '\0';
+  LCD_DrawString(usC, usP, str);
+}

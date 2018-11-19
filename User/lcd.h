@@ -100,6 +100,7 @@ void                     LCD_DrawString           	 ( uint16_t usC, uint16_t usP
 void 										 LCD_DrawCircle							 ( uint16_t usC, uint16_t usP, uint16_t R, uint16_t usColor);
 void                     LCD_DrawHex                 ( uint16_t usC, uint16_t usP, uint32_t x );
 void                     LCD_DrawDec                 ( uint16_t usC, uint16_t usP, uint32_t x );
+void                     LCD_DrawBin                 ( uint16_t usC, uint16_t usP, uint16_t x );
 
 #endif 
 

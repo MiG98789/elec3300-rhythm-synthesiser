@@ -3,6 +3,7 @@
 #include "stm32f10x_dac.h"
 #include "stm32f10x_dma.h"
 #include "stm32f10x_tim.h"
+#include "lcd.h"
 #include "misc.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -33,9 +34,11 @@ static void GPIOA_INIT(void) {
 static void GPIOB_INIT(void) {  
   GPIO_InitTypeDef GPIO_InitStructure;
 	
-	// Pattern: CLK - PB5, QH - PB6, SH/LD - PB7
+	// Pattern:
+  // Buttons: CLK - PB5, QH - PB6, SH/LD - PB7
+  // LEDs: SRCLK - PB14, RCLCK - PB13, SER - PB12
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
@@ -62,10 +65,30 @@ static void TIM2_INIT(void) {
   TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
   TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM7, &TIM_TimeBaseInitStruct);
-  TIM_SelectOutputTrigger(TIM7, TIM_TRGOSource_Update);
-  TIM_ITConfig(TIM7, TIM_IT_Update, ENABLE);
+  TIM_SelectOutputTrigger(TIM2, TIM_TRGOSource_Update);
+  TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
   
   NVIC_InitStruct.NVIC_IRQChannel = TIM2_IRQn;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStruct);
+}
+
+// Pattern timer
+static void TIM3_INIT(void) {
+  RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE);
+  
+  TIM_TimeBaseInitStruct.TIM_Period = 1200 - 1;
+  TIM_TimeBaseInitStruct.TIM_Prescaler = 1000 - 1;
+  TIM_TimeBaseInitStruct.TIM_ClockDivision = TIM_CKD_DIV1;
+  TIM_TimeBaseInitStruct.TIM_CounterMode = TIM_CounterMode_Up;
+  TIM_TimeBaseInit(TIM3, &TIM_TimeBaseInitStruct);
+  TIM_SelectOutputTrigger(TIM3, TIM_TRGOSource_Update);
+  TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
+  TIM_Cmd(TIM3, ENABLE);
+  
+  NVIC_InitStruct.NVIC_IRQChannel = TIM3_IRQn;
   NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
@@ -129,10 +152,13 @@ static void DAC1_INIT(void) {
 }
 
 void init_all(void) {
+  LCD_INIT();
+  
   GPIOA_INIT();
   GPIOB_INIT();
 
   TIM2_INIT();
+  TIM3_INIT();
   TIM6_INIT();
 
   DMA2_Channel3_INIT();
