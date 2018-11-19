@@ -560,9 +560,14 @@
               <FilePath>..\..\User\stm\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>drum_samples.c</FileName>
+              <FileName>drums.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\drum_samples.c</FilePath>
+              <FilePath>..\..\User\drums.c</FilePath>
+            </File>
+            <File>
+              <FileName>drums.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drums.h</FilePath>
             </File>
           </Files>
         </Group>
