@@ -1,16 +1,14 @@
 #include "pattern.h"
+#include "helper.h"
 
-#include <stdio.h>
-
+#include "lcd.h"
 #include "stm32f10x_gpio.h"
 
-#include "helper.h"
-#include "global.h"
-#include "lcd.h"
+////////////////////////////////////////////////////////////////////////////////
+// Static
+////////////////////////////////////////////////////////////////////////////////
 
-const uint8_t PATTERN_BUTTON_MAPPING[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
-
-uint16_t prevResult = 0;
+static const uint8_t patternButtonMapping[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
 
 static void CLK_Pulse(int duration) {
   GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_SET);
@@ -18,7 +16,17 @@ static void CLK_Pulse(int duration) {
   GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_RESET);
 }
 
-void readPatternButtons(void) {
+////////////////////////////////////////////////////////////////////////////////
+// Export
+////////////////////////////////////////////////////////////////////////////////
+
+uint16_t PATTERNS[16][8] = { 0xFFFF };
+uint8_t CURR_PATTERN = 0;
+uint8_t CURR_INSTRUMENT = 0;
+uint16_t CURR_STEP = 0x1;
+
+void READ_PATTERN_BUTTONS(void) {
+  static uint16_t prevResult = 0;
   uint16_t currResult = 0;
   uint8_t buttonRawIndex = 0;
 	uint8_t buttonMapIndex = 0;
@@ -47,7 +55,7 @@ void readPatternButtons(void) {
   for (; buttonRawIndex < 16; buttonRawIndex++) {
     inputDataBit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
 
-    buttonMapIndex = PATTERN_BUTTON_MAPPING[buttonRawIndex];
+    buttonMapIndex = patternButtonMapping[buttonRawIndex];
     currResult |= inputDataBit << (15 - buttonMapIndex);
 
     CLK_Pulse(10000);
@@ -59,7 +67,12 @@ void readPatternButtons(void) {
   // XOR to detect change, AND to block falling edge, XOR to toggle
   xorResult = currResult ^ prevResult;
   andResult = currResult & xorResult;
-  pattern[currInstrument] ^= andResult;
+  PATTERNS[CURR_PATTERN][CURR_INSTRUMENT] ^= andResult;
   prevResult = currResult;
-  LCD_DrawBin(0, 0x10, pattern[currInstrument]);
+  LCD_DrawBin(0, 0x10, PATTERNS[CURR_PATTERN][CURR_INSTRUMENT]);
+  LCD_DrawBin(0, 0x20, CURR_STEP);
+}
+
+void STEP_PATTERN(void) {
+  CURR_STEP = (CURR_STEP >> 1) | (CURR_STEP << 15);
 }
