@@ -8,7 +8,8 @@
 #include "global.h"
 #include "lcd.h"
 
-const uint8_t PATTERN_BUTTON_MAPPING[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
+// const uint8_t PATTERN_BUTTON_MAPPING[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
+const uint8_t PATTERN_BUTTON_MAPPING[16] = {4, 5, 6, 7, 3, 2, 1, 0, 12, 13, 14, 15, 11, 10, 9, 8};
 
 uint16_t prevResult = 0;
 
@@ -38,7 +39,7 @@ void readPatternButtons(void) {
   GPIO_WriteBit(GPIOB, GPIO_Pin_7, Bit_RESET);
 		
   // 3) Set CLK to high, delayus, CLK to low
-  CLK_Pulse(10000);
+  CLK_Pulse(100);
 
   // 4) Set SH/LD to high
   GPIO_WriteBit(GPIOB, GPIO_Pin_7, Bit_SET);
@@ -50,7 +51,7 @@ void readPatternButtons(void) {
     buttonMapIndex = PATTERN_BUTTON_MAPPING[buttonRawIndex];
     currResult |= inputDataBit << (15 - buttonMapIndex);
 
-    CLK_Pulse(10000);
+    CLK_Pulse(100);
   }
   LCD_DrawBin(0, 0, currResult);
   
