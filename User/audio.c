@@ -9,9 +9,6 @@
 // Static
 ////////////////////////////////////////////////////////////////////////////////
 
-static const uint32_t bufferSize = 11025;
-static int16_t buffer[bufferSize];
-
 static const uint8_t mixSize = 16;
 static const int16_t* mixData[mixSize] = { 0 };
 static uint16_t mixCounter[mixSize] = { 0 };
@@ -47,7 +44,7 @@ static void setMasterVolume(int32_t* sample) {
   *sample = *sample * masterVolume >> 12;
 }
 
-static void renderMix(void) {
+static void writeBuffer(void) {
   uint32_t i, j;
   int32_t sample;
   for (i = 0; i < STEP_SIZE; ++i) {
@@ -60,7 +57,7 @@ static void renderMix(void) {
     }
     setMasterVolume(&sample);
     clamp12(&sample);
-    buffer[i] = 2048 + sample;
+    AUDIO_BUFFER[i] = 2048 + sample;
   }
 }
 
@@ -68,20 +65,13 @@ static void renderMix(void) {
 // Export
 ////////////////////////////////////////////////////////////////////////////////
 
-const int16_t STEP_SIZE = 8000;
-const uint32_t AUDIO_BUFFER_SIZE = bufferSize;
-int16_t* const AUDIO_BUFFER = buffer;
+int16_t STEP_SIZE = 480000 / 110;
+int16_t AUDIO_BUFFER[8000] = { 0 };
 
 void STEP_AUDIO(void) {
-  // min = 3200, max = 8000
-  static int16_t stepSize = 8000;
-  DMA_Cmd(DMA2_Channel3, DISABLE);
-  DMA_SetCurrDataCounter(DMA2_Channel3, stepSize);
-  DMA_Cmd(DMA2_Channel3, ENABLE);
+//  DMA_Cmd(DMA2_Channel3, DISABLE);
+//  DMA_SetCurrDataCounter(DMA2_Channel3, STEP_SIZE);
+//  DMA_Cmd(DMA2_Channel3, ENABLE);
   updateMix();
-  renderMix();
-  if ((stepSize -= 300) < 3200)
-    stepSize = 8000;
-  if ((masterVolume -= 256) < 0)
-    masterVolume = 4096;
+  writeBuffer();
 }

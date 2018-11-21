@@ -20,7 +20,10 @@ static void CLK_Pulse(int duration) {
 // Export
 ////////////////////////////////////////////////////////////////////////////////
 
-uint16_t PATTERNS[16][8] = { 0xFFFF };
+// kick snare tom perc clap cowbell openhat hihat
+uint16_t PATTERNS[16][8] = {
+  { 0x9A9A, 0x4848, 0x0404, 0x0000, 0x0000, 0x0000, 0x2222, 0xFFFF }
+};
 uint8_t CURR_PATTERN = 0;
 uint8_t CURR_INSTRUMENT = 0;
 uint16_t CURR_STEP = 0x1;
