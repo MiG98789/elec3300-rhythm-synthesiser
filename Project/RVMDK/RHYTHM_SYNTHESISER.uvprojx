@@ -580,7 +580,7 @@
               <FilePath>..\..\User\audio.h</FilePath>
             </File>
             <File>
-              <FileName>helper.h</FileName>
+              <FileName>pattern.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\helper.h</FilePath>
             </File>

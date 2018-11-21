@@ -8,11 +8,11 @@
 // Static
 ////////////////////////////////////////////////////////////////////////////////
 
-static const uint8_t patternButtonMapping[16] = {0, 5, 6, 7, 1, 4, 3, 2, 12, 13, 14, 15, 11, 10, 9, 8};
+static const uint8_t patternButtonMapping[16] = {4, 5, 6, 7, 3, 2, 1, 0, 12, 13, 14, 15, 11, 10, 9, 8};
 
-static void CLK_Pulse(int duration) {
+static void CLK_Pulse() {
   GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_SET);
-  Delayus(duration);
+  Delayus(100);
   GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_RESET);
 }
 
@@ -49,7 +49,7 @@ void READ_PATTERN_BUTTONS(void) {
   GPIO_WriteBit(GPIOB, GPIO_Pin_7, Bit_RESET);
 		
   // 3) Set CLK to high, delayus, CLK to low
-  CLK_Pulse(10000);
+  CLK_Pulse();
 
   // 4) Set SH/LD to high
   GPIO_WriteBit(GPIOB, GPIO_Pin_7, Bit_SET);
@@ -61,7 +61,7 @@ void READ_PATTERN_BUTTONS(void) {
     buttonMapIndex = patternButtonMapping[buttonRawIndex];
     currResult |= inputDataBit << (15 - buttonMapIndex);
 
-    CLK_Pulse(10000);
+    CLK_Pulse();
   }
   LCD_DrawBin(0, 0, currResult);
   
