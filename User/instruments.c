@@ -39,3 +39,4 @@ static const uint16_t sizes[] = { 12399, 7848, 19040, 1094, 12492, 15372, 25263,
 const uint8_t INSTRUMENT_COUNT = 8;
 const int16_t** const INSTRUMENT_SAMPLES = samples;
 const uint16_t* const INSTRUMENT_SIZES = sizes;
+const char INSTRUMENT_NAMES[8][10] = { "Kick", "Snare", "Tom", "Perc", "Clap", "Cowbell", "Open-hat", "Hi-hat" };

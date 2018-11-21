@@ -1,8 +1,10 @@
 #include "init.h"
+#include "instruments.h"
 #include "audio.h"
 
 #include "stm32f10x_dac.h"
 #include "stm32f10x_dma.h"
+#include "stm32f10x_exti.h"
 #include "stm32f10x_tim.h"
 #include "lcd.h"
 #include "misc.h"
@@ -13,8 +15,29 @@
 
 static void initGPIOA(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
+  NVIC_InitTypeDef NVIC_InitStruct;
+  EXTI_InitTypeDef EXTI_InitStruct;
   
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
+  
+  // K1
+  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_0;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_Init(GPIOA, &GPIO_InitStruct);
+  GPIO_EXTILineConfig(RCC_APB2Periph_GPIOA, GPIO_Pin_0);
+
+  EXTI_InitStruct.EXTI_Line = EXTI_Line0;
+  EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Falling;
+	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+  EXTI_Init(&EXTI_InitStruct);
+  
+  NVIC_InitStruct.NVIC_IRQChannel = EXTI0_IRQn;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStruct);
   
   // DAC: OUT - PA4
   GPIO_InitStruct.GPIO_Pin = GPIO_Pin_4;
@@ -65,8 +88,8 @@ static void initTIM3(void) {
   TIM_ITConfig(TIM3, TIM_IT_Update, ENABLE);
   
   NVIC_InitStruct.NVIC_IRQChannel = TIM3_IRQn;
-  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStruct);
 }
@@ -164,4 +187,12 @@ void INIT_ALL(void) {
   
   TIM_Cmd(TIM3, ENABLE);
   TIM_Cmd(TIM6, ENABLE);
+  
+  LCD_DrawString(0x00, 0x00, "Instrument:");
+  LCD_DrawString(0x00, 0x10, "Button:");
+  LCD_DrawString(0x00, 0x20, "Pattern:");
+  LCD_DrawString(0x00, 0x30, "Step:");
+  
+  LCD_DrawString(0x60, 0x00, INSTRUMENT_NAMES[0]);
+
 }

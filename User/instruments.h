@@ -6,5 +6,6 @@
 extern const uint8_t INSTRUMENT_COUNT;
 extern const int16_t** const INSTRUMENT_SAMPLES;
 extern const uint16_t* const INSTRUMENT_SIZES;
+extern const char INSTRUMENT_NAMES[8][10];
 
 #endif

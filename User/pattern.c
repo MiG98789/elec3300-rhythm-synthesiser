@@ -63,7 +63,6 @@ void READ_PATTERN_BUTTONS(void) {
 
     CLK_Pulse();
   }
-  LCD_DrawBin(0, 0, currResult);
   
   // Compare with prevResult
   // XOR prevResult and currResult, then AND the XOR value and currResult, then XOR the AND pattern
@@ -72,8 +71,10 @@ void READ_PATTERN_BUTTONS(void) {
   andResult = currResult & xorResult;
   PATTERNS[CURR_PATTERN][CURR_INSTRUMENT] ^= andResult;
   prevResult = currResult;
-  LCD_DrawBin(0, 0x10, PATTERNS[CURR_PATTERN][CURR_INSTRUMENT]);
-  LCD_DrawBin(0, 0x20, CURR_STEP);
+  
+  LCD_DrawBin(0x60, 0x10, currResult);
+  LCD_DrawBin(0x60, 0x20, PATTERNS[CURR_PATTERN][CURR_INSTRUMENT]);
+  LCD_DrawBin(0x60, 0x30, CURR_STEP);
 }
 
 void STEP_PATTERN(void) {
