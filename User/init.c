@@ -53,7 +53,7 @@ static void initGPIOB(void) {
 	
 	// Pattern:
   // Buttons: CLK - PB5, QH - PB6, SH/LD - PB7
-  // LEDs: SRCLK - PB14, RCLCK - PB13, SER - PB12
+  // LEDs: SRCLK - PB14, RCLK - PB13, SER - PB12
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
@@ -66,6 +66,10 @@ static void initGPIOB(void) {
   
   // Ensure Pattern CLK is LOW
   GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_RESET);
+  
+  // Ensure LED SRCLK and RCLK are LOW
+  GPIO_WriteBit(GPIOB, GPIO_Pin_13, Bit_RESET);
+  GPIO_WriteBit(GPIOB, GPIO_Pin_14, Bit_RESET);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

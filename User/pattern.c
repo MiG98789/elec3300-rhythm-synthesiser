@@ -5,15 +5,32 @@
 #include "stm32f10x_gpio.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Define
+////////////////////////////////////////////////////////////////////////////////
+
+#ifndef __PATTERN_C
+
+#define Pattern_CLK_Pin   GPIO_Pin_5
+#define Pattern_QH_Pin    GPIO_Pin_6
+#define Pattern_SHLD_Pin  GPIO_Pin_7
+
+#define LED_SER_Pin       GPIO_Pin_12
+#define LED_RCLK_Pin      GPIO_Pin_13
+#define LED_SRCLK_Pin     GPIO_Pin_14
+
+#endif
+
+////////////////////////////////////////////////////////////////////////////////
 // Static
 ////////////////////////////////////////////////////////////////////////////////
 
+static const uint8_t ledMapping[16] = {14, 13, 12, 11, 10, 9, 8, 15, 6, 5, 4, 3, 2, 1, 0, 7};
 static const uint8_t patternButtonMapping[16] = {4, 5, 6, 7, 3, 2, 1, 0, 12, 13, 14, 15, 11, 10, 9, 8};
 
-static void CLK_Pulse() {
-  GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_SET);
+static void CLK_Pulse(uint16_t GPIO_Pin) {
+  GPIO_WriteBit(GPIOB, GPIO_Pin, Bit_SET);
   Delayus(100);
-  GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_RESET);
+  GPIO_WriteBit(GPIOB, GPIO_Pin, Bit_RESET);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -37,31 +54,27 @@ void READ_PATTERN_BUTTONS(void) {
   
   uint16_t xorResult = 0;
   uint16_t andResult = 0;
-
-  // CLK:   PB5
-  // QH:    PB6
-  // SH/LD: PB7
     
   // Set CLK to low
-  GPIO_WriteBit(GPIOB, GPIO_Pin_5, Bit_RESET);
+  GPIO_WriteBit(GPIOB, Pattern_CLK_Pin, Bit_RESET);
 
-  // 2) Set SH/LD to low
-  GPIO_WriteBit(GPIOB, GPIO_Pin_7, Bit_RESET);
+  // Set SH/LD to low
+  GPIO_WriteBit(GPIOB, Pattern_SHLD_Pin, Bit_RESET);
 		
-  // 3) Set CLK to high, delayus, CLK to low
-  CLK_Pulse();
+  // Set CLK to high, delayus, CLK to low
+  CLK_Pulse(Pattern_CLK_Pin);
 
-  // 4) Set SH/LD to high
-  GPIO_WriteBit(GPIOB, GPIO_Pin_7, Bit_SET);
+  // Set SH/LD to high
+  GPIO_WriteBit(GPIOB, Pattern_SHLD_Pin, Bit_SET);
 		
-  // 5) 16-for loop, each time do step 3 and read QH
+    // 16-for loop, each time: pulse CLK and read QH
   for (; buttonRawIndex < 16; buttonRawIndex++) {
-    inputDataBit = GPIO_ReadInputDataBit(GPIOB, GPIO_Pin_6);
+    inputDataBit = GPIO_ReadInputDataBit(GPIOB, Pattern_QH_Pin);
 
     buttonMapIndex = patternButtonMapping[buttonRawIndex];
     currResult |= inputDataBit << (15 - buttonMapIndex);
 
-    CLK_Pulse();
+    CLK_Pulse(Pattern_CLK_Pin);
   }
   
   // Compare with prevResult
@@ -75,6 +88,31 @@ void READ_PATTERN_BUTTONS(void) {
   LCD_DrawBin(0x60, 0x10, currResult);
   LCD_DrawBin(0x60, 0x20, PATTERNS[CURR_PATTERN][CURR_INSTRUMENT]);
   LCD_DrawBin(0x60, 0x30, CURR_STEP);
+}
+
+void SEND_LED_COMMANDS(void) {
+  uint8_t ledRawIndex = 0;
+  uint8_t ledMapIndex = 0;
+  
+  // Set RCLK and SRCLK to low
+  GPIO_WriteBit(GPIOB, LED_RCLK_Pin, Bit_RESET);
+  GPIO_WriteBit(GPIOB, LED_SRCLK_Pin, Bit_RESET);
+  
+  // 16-for loop, each time: write to SER and pulse SRCLK
+  for (; ledRawIndex < 16; ledRawIndex++) {
+    ledMapIndex = ledMapping[ledRawIndex];
+    
+    if ((PATTERNS[CURR_PATTERN][CURR_INSTRUMENT] << ledMapIndex) & 0x8000) {
+      GPIO_WriteBit(GPIOB, LED_SER_Pin, Bit_SET);
+    } else {
+      GPIO_WriteBit(GPIOB, LED_SER_Pin, Bit_RESET);
+    }
+    
+    CLK_Pulse(LED_SRCLK_Pin);
+  }
+  
+  // Pulse RCLK to activate register
+  CLK_Pulse(LED_RCLK_Pin);
 }
 
 void STEP_PATTERN(void) {

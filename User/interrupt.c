@@ -27,6 +27,8 @@ void DMA2_Channel3_IRQHandler(void) {
 void TIM3_IRQHandler(void) {	
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
     READ_PATTERN_BUTTONS();
+    SEND_LED_COMMANDS();
+    
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 }

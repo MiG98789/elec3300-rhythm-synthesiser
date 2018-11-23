@@ -9,6 +9,7 @@ extern uint8_t CURR_INSTRUMENT;
 extern uint16_t CURR_STEP;
 
 void READ_PATTERN_BUTTONS(void);
+void SEND_LED_COMMANDS(void);
 void STEP_PATTERN(void);
 
 #endif
