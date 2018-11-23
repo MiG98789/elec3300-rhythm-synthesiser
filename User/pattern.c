@@ -27,6 +27,10 @@
 static const uint8_t ledMapping[16] = {14, 13, 12, 11, 10, 9, 8, 15, 6, 5, 4, 3, 2, 1, 0, 7};
 static const uint8_t patternButtonMapping[16] = {4, 5, 6, 7, 3, 2, 1, 0, 12, 13, 14, 15, 11, 10, 9, 8};
 
+static uint16_t prevStep = 0;
+static uint8_t ledStepCounter = 0;
+static uint8_t ledPulseTime = 3;
+
 static void CLK_Pulse(uint16_t GPIO_Pin) {
   GPIO_WriteBit(GPIOB, GPIO_Pin, Bit_SET);
   Delayus(100);
@@ -93,16 +97,29 @@ void READ_PATTERN_BUTTONS(void) {
 void SEND_LED_COMMANDS(void) {
   uint8_t ledRawIndex = 0;
   uint8_t ledMapIndex = 0;
+  uint16_t currPattern = PATTERNS[CURR_PATTERN][CURR_INSTRUMENT];
   
   // Set RCLK and SRCLK to low
   GPIO_WriteBit(GPIOB, LED_RCLK_Pin, Bit_RESET);
   GPIO_WriteBit(GPIOB, LED_SRCLK_Pin, Bit_RESET);
   
+  if (prevStep != CURR_STEP) {
+    prevStep = CURR_STEP;
+    ledStepCounter = ledPulseTime;
+  }
+
+  if (ledStepCounter > 0) {
+    currPattern ^= CURR_STEP;
+    ledStepCounter--;
+  }
+  
   // 16-for loop, each time: write to SER and pulse SRCLK
   for (; ledRawIndex < 16; ledRawIndex++) {
     ledMapIndex = ledMapping[ledRawIndex];
     
-    if ((PATTERNS[CURR_PATTERN][CURR_INSTRUMENT] << ledMapIndex) & 0x8000) {
+    if (
+      ((currPattern << ledMapIndex) & 0x8000) // No pulse 
+    ) {
       GPIO_WriteBit(GPIOB, LED_SER_Pin, Bit_SET);
     } else {
       GPIO_WriteBit(GPIOB, LED_SER_Pin, Bit_RESET);

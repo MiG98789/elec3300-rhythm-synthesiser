@@ -196,7 +196,7 @@ void INIT_ALL(void) {
   LCD_DrawString(0x00, 0x10, "Button:");
   LCD_DrawString(0x00, 0x20, "Pattern:");
   LCD_DrawString(0x00, 0x30, "Step:");
-  
+
   LCD_DrawString(0x60, 0x00, INSTRUMENT_NAMES[0]);
 
 }
