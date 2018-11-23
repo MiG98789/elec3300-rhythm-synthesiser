@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>STM32F10X_HD, USE_STDPERIPH_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\User;..\..\Libraries\CMSIS;..\..\Libraries\FWlib\inc;..\..\User\lcd;..\..\User\helper;..\..\User\stm;..\..\User\panels</IncludePath>
+              <IncludePath>..\..\User;..\..\Libraries\CMSIS;..\..\Libraries\FWlib\inc</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -525,19 +525,34 @@
           <GroupName>USER</GroupName>
           <Files>
             <File>
-              <FileName>ascii.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\lcd\ascii.h</FilePath>
+              <FileName>audio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\audio.c</FilePath>
+            </File>
+            <File>
+              <FileName>helper.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\helper.c</FilePath>
+            </File>
+            <File>
+              <FileName>init.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\init.c</FilePath>
+            </File>
+            <File>
+              <FileName>instruments.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\instruments.c</FilePath>
+            </File>
+            <File>
+              <FileName>interrupt.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\interrupt.c</FilePath>
             </File>
             <File>
               <FileName>lcd.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\lcd\lcd.c</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\lcd\lcd.h</FilePath>
+              <FilePath>..\..\User\lcd.c</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -545,29 +560,59 @@
               <FilePath>..\..\User\main.c</FilePath>
             </File>
             <File>
-              <FileName>helper.c</FileName>
+              <FileName>pattern.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\helper\helper.c</FilePath>
-            </File>
-            <File>
-              <FileName>helper.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\helper\helper.h</FilePath>
+              <FilePath>..\..\User\pattern.c</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_it.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\stm\stm32f10x_it.c</FilePath>
+              <FilePath>..\..\User\stm32f10x_it.c</FilePath>
             </File>
             <File>
-              <FileName>drums.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\drums.c</FilePath>
-            </File>
-            <File>
-              <FileName>drums.h</FileName>
+              <FileName>ascii.h</FileName>
               <FileType>5</FileType>
-              <FilePath>..\..\User\drums.h</FilePath>
+              <FilePath>..\..\User\ascii.h</FilePath>
+            </File>
+            <File>
+              <FileName>audio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\audio.h</FilePath>
+            </File>
+            <File>
+              <FileName>pattern.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\helper.h</FilePath>
+            </File>
+            <File>
+              <FileName>init.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\init.h</FilePath>
+            </File>
+            <File>
+              <FileName>instruments.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\instruments.h</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\lcd.h</FilePath>
+            </File>
+            <File>
+              <FileName>pattern.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\pattern.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\stm32f10x_conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f10x_it.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\stm32f10x_it.h</FilePath>
             </File>
           </Files>
         </Group>

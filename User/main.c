@@ -1,6 +1,6 @@
 #include "init.h"
 
 int main(void) {
-  init_all();
+  INIT_ALL();
   while (1);
 }

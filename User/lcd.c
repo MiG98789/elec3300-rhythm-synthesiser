@@ -593,9 +593,9 @@ void LCD_DrawDec (uint16_t usC, uint16_t usP, uint32_t x)
 void LCD_DrawBin (uint16_t usC, uint16_t usP, uint16_t x)
 {
   int i;
-  char str[17];
-  for (i = 0; i < 16; ++i)
-    str[i] = '0' + ((x & (1 << (15 - i))) >> (15 - i));
-  str[16] = '\0';
+  uint16_t mask;
+  char str[17] = { 0 };
+  for (i = 0, mask = 1 << 15; i < 16; ++i, mask >>= 1)
+    str[i] = x & mask ? '1' : '0';
   LCD_DrawString(usC, usP, str);
 }
