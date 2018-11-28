@@ -196,6 +196,8 @@ static void initDAC1(void) {
 ////////////////////////////////////////////////////////////////////////////////
 
 static void initADC1(void) {
+  // For volume panel: COM OUT/IN - PA6 (ADC1 IN6)
+  
   ADC_InitTypeDef ADC_InitStruct;
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
   
@@ -208,7 +210,7 @@ static void initADC1(void) {
 	ADC_Init(ADC1, &ADC_InitStruct);
 	
 	RCC_ADCCLKConfig(RCC_PCLK2_Div6);
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 1, ADC_SampleTime_55Cycles5);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_6, 1, ADC_SampleTime_55Cycles5);
 	ADC_Cmd(ADC1, ENABLE);
   
   /* Enable ADC1 reset calibration register */
@@ -219,6 +221,34 @@ static void initADC1(void) {
 	ADC_StartCalibration(ADC1);
 	/* Check the end of ADC1 calibration */
 	while(ADC_GetCalibrationStatus(ADC1));
+}
+
+static void initADC2(void) {
+  // For volume panel: Master volume - PA7 (ADC2 IN7)
+  
+  ADC_InitTypeDef ADC_InitStruct;
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC2, ENABLE);
+  
+  ADC_InitStruct.ADC_Mode = ADC_Mode_Independent;
+	ADC_InitStruct.ADC_ScanConvMode = DISABLE;
+	ADC_InitStruct.ADC_ContinuousConvMode = DISABLE;
+	ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+	ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
+	ADC_InitStruct.ADC_NbrOfChannel = 1;
+	ADC_Init(ADC2, &ADC_InitStruct);
+	
+	RCC_ADCCLKConfig(RCC_PCLK2_Div6);
+	ADC_RegularChannelConfig(ADC2, ADC_Channel_7, 1, ADC_SampleTime_55Cycles5);
+	ADC_Cmd(ADC2, ENABLE);
+  
+  /* Enable ADC2 reset calibration register */
+	ADC_ResetCalibration(ADC2);
+	/* Check the end of ADC2 reset calibration register */
+	while(ADC_GetResetCalibrationStatus(ADC2));
+	/* Start ADC2 calibration */
+	ADC_StartCalibration(ADC2);
+	/* Check the end of ADC2 calibration */
+	while(ADC_GetCalibrationStatus(ADC2));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -240,6 +270,7 @@ void INIT_ALL(void) {
   initDAC1();
   
   initADC1();
+  initADC2();
   
   TIM_Cmd(TIM3, ENABLE);
   TIM_Cmd(TIM6, ENABLE);
@@ -248,6 +279,7 @@ void INIT_ALL(void) {
   LCD_DrawString(0x00, 0x10, "Button:");
   LCD_DrawString(0x00, 0x20, "Pattern:");
   LCD_DrawString(0x00, 0x30, "Step:");
+  LCD_DrawString(0x00, 0x40, "Volume:");
 
   LCD_DrawString(0x60, 0x00, INSTRUMENT_NAMES[0]);
 

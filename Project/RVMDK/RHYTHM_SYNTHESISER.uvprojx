@@ -565,6 +565,11 @@
               <FilePath>..\..\User\pattern.c</FilePath>
             </File>
             <File>
+              <FileName>volume.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\volume.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f10x_it.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\stm32f10x_it.c</FilePath>
@@ -578,11 +583,6 @@
               <FileName>audio.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\audio.h</FilePath>
-            </File>
-            <File>
-              <FileName>pattern.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\helper.h</FilePath>
             </File>
             <File>
               <FileName>init.h</FileName>
@@ -603,6 +603,11 @@
               <FileName>pattern.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\pattern.h</FilePath>
+            </File>
+            <File>
+              <FileName>volume.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\volume.h</FilePath>
             </File>
             <File>
               <FileName>stm32f10x_conf.h</FileName>

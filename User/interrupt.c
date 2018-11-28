@@ -1,6 +1,7 @@
 #include "audio.h"
 #include "instruments.h"
 #include "pattern.h"
+#include "volume.h"
 
 #include "lcd.h"
 #include "stm32f10x_dma.h"
@@ -28,6 +29,7 @@ void TIM3_IRQHandler(void) {
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
     READ_PATTERN_BUTTONS();
     SEND_PATTERN_LED_COMMANDS();
+    READ_VOLUME_POTENTIOMETERS();
     
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
