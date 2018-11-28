@@ -94,7 +94,7 @@ void READ_PATTERN_BUTTONS(void) {
   LCD_DrawBin(0x60, 0x30, CURR_STEP);
 }
 
-void SEND_LED_COMMANDS(void) {
+void SEND_PATTERN_LED_COMMANDS(void) {
   uint8_t ledRawIndex = 0;
   uint8_t ledMapIndex = 0;
   uint16_t currPattern = PATTERNS[CURR_PATTERN][CURR_INSTRUMENT];
