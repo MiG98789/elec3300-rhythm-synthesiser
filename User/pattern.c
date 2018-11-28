@@ -89,9 +89,9 @@ void READ_PATTERN_BUTTONS(void) {
   PATTERNS[CURR_PATTERN][CURR_INSTRUMENT] ^= andResult;
   prevResult = currResult;
   
-  LCD_DrawBin(0x60, 0x10, currResult);
-  LCD_DrawBin(0x60, 0x20, PATTERNS[CURR_PATTERN][CURR_INSTRUMENT]);
-  LCD_DrawBin(0x60, 0x30, CURR_STEP);
+  LCD_DrawBin(0x60, 0x20, currResult);
+  LCD_DrawBin(0x60, 0x30, PATTERNS[CURR_PATTERN][CURR_INSTRUMENT]);
+  LCD_DrawBin(0x60, 0x40, CURR_STEP);
 }
 
 void SEND_PATTERN_LED_COMMANDS(void) {

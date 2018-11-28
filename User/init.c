@@ -276,10 +276,20 @@ void INIT_ALL(void) {
   TIM_Cmd(TIM6, ENABLE);
   
   LCD_DrawString(0x00, 0x00, "Instrument:");
-  LCD_DrawString(0x00, 0x10, "Button:");
-  LCD_DrawString(0x00, 0x20, "Pattern:");
-  LCD_DrawString(0x00, 0x30, "Step:");
-  LCD_DrawString(0x00, 0x40, "Volume:");
+
+  LCD_DrawString(0x00, 0x20, "Button:");
+  LCD_DrawString(0x00, 0x30, "Pattern:");
+  LCD_DrawString(0x00, 0x40, "Step:");
+
+  LCD_DrawString(0x00, 0x60, "Master vol:");
+  LCD_DrawString(0x00, 0x70, "Volume 1:");
+  LCD_DrawString(0x00, 0x80, "Volume 2:");
+  LCD_DrawString(0x00, 0x90, "Volume 3:");
+  LCD_DrawString(0x00, 0xA0, "Volume 4:");
+  LCD_DrawString(0x00, 0xB0, "Volume 5:");
+  LCD_DrawString(0x00, 0xC0, "Volume 6:");
+  LCD_DrawString(0x00, 0xD0, "Volume 7:");
+  LCD_DrawString(0x00, 0xE0, "Volume 8:");
 
   LCD_DrawString(0x60, 0x00, INSTRUMENT_NAMES[0]);
 
