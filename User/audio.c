@@ -1,6 +1,7 @@
 #include "audio.h"
 #include "instruments.h"
 #include "pattern.h"
+#include "volume.h"
 
 #include "stm32f10x_dac.h"
 #include "stm32f10x_dma.h"
@@ -12,8 +13,6 @@
 static const uint8_t mixSize = 16;
 static const int16_t* mixData[mixSize] = { 0 };
 static uint16_t mixCounter[mixSize] = { 0 };
-
-static int16_t masterVolume = 4096;
 
 static uint32_t min_element(const uint16_t* const first, const uint16_t* const last) {
   const uint16_t* smallest = first;
@@ -41,7 +40,7 @@ static void updateMix(void) {
 }
 
 static void setMasterVolume(int32_t* sample) {
-  *sample = *sample * masterVolume >> 12;
+  *sample = *sample * MASTER_VOLUME >> 12;
 }
 
 static void writeBuffer(void) {
