@@ -2,6 +2,7 @@
 #include "instruments.h"
 #include "audio.h"
 
+#include "stm32f10x_adc.h"
 #include "stm32f10x_dac.h"
 #include "stm32f10x_dma.h"
 #include "stm32f10x_exti.h"
@@ -44,11 +45,16 @@ static void initGPIOA(void) {
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AIN;
   GPIO_Init(GPIOA, &GPIO_InitStruct);
+  
+  // Volume: COM OUT/IN - PA6, Master - PA7
+  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_AIN;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 static void initGPIOB(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
-  
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 	
 	// Pattern:
@@ -70,6 +76,28 @@ static void initGPIOB(void) {
   // Ensure LED SRCLK and RCLK are LOW
   GPIO_WriteBit(GPIOB, GPIO_Pin_13, Bit_RESET);
   GPIO_WriteBit(GPIOB, GPIO_Pin_14, Bit_RESET);
+}
+
+static void initGPIOC(void) {
+  GPIO_InitTypeDef GPIO_InitStruct;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+  
+  // Volume: A - PC8, B - PC9
+  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_9;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOC, &GPIO_InitStruct);
+}
+
+static void initGPIOD(void) {
+  GPIO_InitTypeDef GPIO_InitStruct;
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOD, ENABLE);
+  
+  // Volume: C - PD2
+  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_2;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
+	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+	GPIO_Init(GPIOD, &GPIO_InitStruct);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -167,11 +195,31 @@ static void initDAC1(void) {
 // ADC init
 ////////////////////////////////////////////////////////////////////////////////
 
-/*static void initADC1(void) {
+static void initADC1(void) {
+  ADC_InitTypeDef ADC_InitStruct;
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
   
+  ADC_InitStruct.ADC_Mode = ADC_Mode_Independent;
+	ADC_InitStruct.ADC_ScanConvMode = DISABLE;
+	ADC_InitStruct.ADC_ContinuousConvMode = DISABLE;
+	ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_None;
+	ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
+	ADC_InitStruct.ADC_NbrOfChannel = 1;
+	ADC_Init(ADC1, &ADC_InitStruct);
+	
+	RCC_ADCCLKConfig(RCC_PCLK2_Div6);
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 1, ADC_SampleTime_55Cycles5);
+	ADC_Cmd(ADC1, ENABLE);
   
-}*/
+  /* Enable ADC1 reset calibration register */
+	ADC_ResetCalibration(ADC1);
+	/* Check the end of ADC1 reset calibration register */
+	while(ADC_GetResetCalibrationStatus(ADC1));
+	/* Start ADC1 calibration */
+	ADC_StartCalibration(ADC1);
+	/* Check the end of ADC1 calibration */
+	while(ADC_GetCalibrationStatus(ADC1));
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Exported
@@ -182,12 +230,16 @@ void INIT_ALL(void) {
   
   initGPIOA();
   initGPIOB();
+  initGPIOC();
+  initGPIOD();
 
   initTIM3();
   initTIM6();
 
   initDMA2Channel3();
   initDAC1();
+  
+  initADC1();
   
   TIM_Cmd(TIM3, ENABLE);
   TIM_Cmd(TIM6, ENABLE);
