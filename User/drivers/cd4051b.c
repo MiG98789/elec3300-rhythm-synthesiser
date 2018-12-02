@@ -3,7 +3,7 @@
 #include "cd4051b.h"
 #include "timer.h"
 
-static const uint8_t    Map[] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+static const uint8_t    Map[] = { 2, 6, 5, 4, 7, 0, 3, 1 };
 static int16_t          State[CD4051B_NumChannels];
 static int              CurrChannel;
 
