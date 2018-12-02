@@ -630,6 +630,16 @@
               <FilePath>..\..\User\drivers\tempoencoder.h</FilePath>
             </File>
             <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\timer.h</FilePath>
+            </File>
+            <File>
               <FileName>tsc2046.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\drivers\tsc2046.c</FilePath>
@@ -642,7 +652,7 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>USER</GroupName>
+          <GroupName>MODULES</GroupName>
           <Files>
             <File>
               <FileName>app.c</FileName>
@@ -653,11 +663,6 @@
               <FileName>app.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\app.h</FilePath>
-            </File>
-            <File>
-              <FileName>main.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\main.c</FilePath>
             </File>
             <File>
               <FileName>pattern.c</FileName>
@@ -690,16 +695,6 @@
               <FilePath>..\..\User\tempo.h</FilePath>
             </File>
             <File>
-              <FileName>timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\timer.h</FilePath>
-            </File>
-            <File>
               <FileName>volume.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\volume.c</FilePath>
@@ -708,6 +703,16 @@
               <FileName>volume.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\volume.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>USER</GroupName>
+          <Files>
+            <File>
+              <FileName>main.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\main.c</FilePath>
             </File>
           </Files>
         </Group>
