@@ -1,83 +1,53 @@
 #include "stm32f10x.h"
 
+#include "../backup/lcd.h"
 #include "tsc2046.h"
 #include "timer.h"
 
 static void (*TouchHandler)(uint8_t x, uint8_t y) = 0;
 
 static void PulseDCLK(void) {
-  GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_RESET);
-  Timer_Delay(14);
   GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_SET);
+  Timer_Delay(14);
+  GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_RESET);
 }
 
-static uint8_t ReadX(void) {
+static uint8_t ReadTouchscreen(uint8_t controlByte) {
   /*
        Control bit def | Value | Function
      ------------------+-------+-----------------------
        Start           |   1   | Must initialise as 1
-       Addressing (A2) |   1   | Measure X
-       Addressing (A1) |   0   | Measure X
-       Addressing (A0) |   1   | Measure X
+       Addressing (A2) |  1/0  | Measure X/Y
+       Addressing (A1) |   0   | Measure X/Y
+       Addressing (A0) |   1   | Measure X/Y
        Mode            |   1   | 8-bit resolution
        SER/DFR         |   0   | Differential mode
        Power-Down (PD1)|   0   | 
        Power-Down (PD0)|   0   | 
   */
-  static uint8_t controlByte = 0xd8;
   uint8_t i = 0;
-  uint8_t x = 0;
-  
+  uint8_t coord = 0;
+
   for (i = 0; i < 8; i++) {
     if (controlByte & (0x80 >> i)) {
-      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_SET);
+      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DIN_PIN, Bit_SET);
     } else {
-      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_RESET);
+      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DIN_PIN, Bit_RESET);
     }
     PulseDCLK();
   }
 
+  Timer_Delay(28);
+
   for (i = 0; i < 8; i++) {
-    x = x << 1;
-    x |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
+    coord = coord << 1;
+    coord |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
     PulseDCLK();
   }
 
-  return x;
-}
+  Timer_Delay(28);
 
-static uint8_t ReadY(void) {
-  /*
-       Control bit def | Value | Function
-     ------------------+-------+-----------------------
-       Start           |   1   | Must initialise as 1
-       Addressing (A2) |   0   | Measure Y
-       Addressing (A1) |   0   | Measure Y
-       Addressing (A0) |   1   | Measure Y
-       Mode            |   1   | 8-bit resolution
-       SER/DFR         |   0   | Differential mode
-       Power-Down (PD1)|   0   | 
-       Power-Down (PD0)|   0   | 
-  */
-  static uint8_t controlByte = 0x98;
-  uint8_t i = 0;
-  uint8_t y = 0;
-
-  for (i = 0; i < 8; i++) {
-    if (controlByte & (0x80 >> i)) {
-      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_SET);
-    } else {
-      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_RESET);
-    }
-  }
-
-  for (i = 0; i < 8; i++) {
-    y = y << 1;
-    y |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
-    PulseDCLK();
-  }  
-
-  return y;
+  return coord;
 }
 
 static void InitGPIO(void) {
@@ -148,8 +118,8 @@ extern void EXTI4_IRQHandler(void) {
   uint8_t y = 0;
 
   if (EXTI_GetITStatus(EXTI_Line4)) {
-    x = ReadX();
-    y = ReadY();
+    x = ReadTouchscreen(0xd8);
+    y = ReadTouchscreen(0x98);
     if (TouchHandler) TouchHandler(x, y);
 
     EXTI_ClearITPendingBit(EXTI_Line4);
