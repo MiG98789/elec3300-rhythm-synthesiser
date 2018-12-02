@@ -3,7 +3,7 @@
 #include "sn74hc166.h"
 #include "timer.h"
 
-static const int8_t Map[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+static const int8_t Map[] = { 4, 5, 6, 7, 3, 2, 1, 0, 12, 13, 14, 15, 11, 10, 9, 8 };
 static void (*RisingHandler)(uint16_t rising) = 0;
 
 static void WriteSHLD(BitAction shld) {
