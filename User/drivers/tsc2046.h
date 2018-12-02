@@ -31,5 +31,6 @@
 #define TSC2046_PENIRQ_PinSource    GPIO_PinSource4
 
 void TSC2046_Init(void);
+void TSC2046_SetTouchHandler(void handler(uint8_t, uint8_t));
 
 #endif

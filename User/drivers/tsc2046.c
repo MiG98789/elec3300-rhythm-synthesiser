@@ -1,6 +1,84 @@
 #include "stm32f10x.h"
 
 #include "tsc2046.h"
+#include "timer.h"
+
+static void (*TouchHandler)(uint8_t x, uint8_t y) = 0;
+
+static void PulseDCLK(void) {
+  GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_RESET);
+  Timer_Delay(14);
+  GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_SET);
+}
+
+static uint8_t ReadX(void) {
+  /*
+       Control bit def | Value | Function
+     ------------------+-------+-----------------------
+       Start           |   1   | Must initialise as 1
+       Addressing (A2) |   1   | Measure X
+       Addressing (A1) |   0   | Measure X
+       Addressing (A0) |   1   | Measure X
+       Mode            |   1   | 8-bit resolution
+       SER/DFR         |   0   | Differential mode
+       Power-Down (PD1)|   0   | 
+       Power-Down (PD0)|   0   | 
+  */
+  static uint8_t controlByte = 0xd8;
+  uint8_t i = 0;
+  uint8_t x = 0;
+  
+  for (i = 0; i < 8; i++) {
+    if (controlByte & (0x80 >> i)) {
+      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_SET);
+    } else {
+      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_RESET);
+    }
+    PulseDCLK();
+  }
+
+  for (i = 0; i < 8; i++) {
+    x = x << 1;
+    x |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
+    PulseDCLK();
+  }
+
+  return x;
+}
+
+static uint8_t ReadY(void) {
+  /*
+       Control bit def | Value | Function
+     ------------------+-------+-----------------------
+       Start           |   1   | Must initialise as 1
+       Addressing (A2) |   0   | Measure Y
+       Addressing (A1) |   0   | Measure Y
+       Addressing (A0) |   1   | Measure Y
+       Mode            |   1   | 8-bit resolution
+       SER/DFR         |   0   | Differential mode
+       Power-Down (PD1)|   0   | 
+       Power-Down (PD0)|   0   | 
+  */
+  static uint8_t controlByte = 0x98;
+  uint8_t i = 0;
+  uint8_t y = 0;
+
+  for (i = 0; i < 8; i++) {
+    if (controlByte & (0x80 >> i)) {
+      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_SET);
+    } else {
+      GPIO_WriteBit(TSC2046_DIN_PORT, TSC2046_DCLK_PIN, Bit_RESET);
+    }
+  }
+
+  for (i = 0; i < 8; i++) {
+    y = y << 1;
+    y |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
+    PulseDCLK();
+  }  
+
+  return y;
+}
 
 static void InitGPIO(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
@@ -20,6 +98,7 @@ static void InitGPIO(void) {
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(TSC2046_CS_PORT, &GPIO_InitStruct);
+  GPIO_WriteBit(TSC2046_CS_PORT, TSC2046_CS_PIN, Bit_RESET);
 
   GPIO_InitStruct.GPIO_Pin = TSC2046_DIN_PIN;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -35,7 +114,6 @@ static void InitGPIO(void) {
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(TSC2046_PENIRQ_PORT, &GPIO_InitStruct);
-
   GPIO_EXTILineConfig(TSC2046_PENIRQ_PortSource, TSC2046_PENIRQ_PinSource);
 }
 
@@ -61,8 +139,19 @@ extern void TSC2046_Init(void) {
   InitEXTI();
 }
 
+extern void TSC2046_SetTouchHandler(void handler(uint8_t, uint8_t)) {
+  TouchHandler = handler;
+}
+
 extern void EXTI4_IRQHandler(void) {
+  uint8_t x = 0;
+  uint8_t y = 0;
+
   if (EXTI_GetITStatus(EXTI_Line4)) {
+    x = ReadX();
+    y = ReadY();
+    if (TouchHandler) TouchHandler(x, y);
+
     EXTI_ClearITPendingBit(EXTI_Line4);
   }
 }
