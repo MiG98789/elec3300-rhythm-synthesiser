@@ -72,7 +72,7 @@ extern void SN74HC595_Init(void) {
 extern void SN74HC595_Poll(void) {
   uint16_t output = State;
   output |= FlashEnable & Flash;
-  output |= Blink;
+  output ^= Blink;
   ShiftOut(output);
   
   Blink = 0x0;
