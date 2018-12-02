@@ -15,6 +15,7 @@ static void InitGPIO(void) {
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
   GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(TempoEncoder_Pin1_PORT, &GPIO_InitStruct);
+  GPIO_EXTILineConfig(TempoEncoder_Pin1_PortSource, TempoEncoder_Pin1_PinSource);
 
   GPIO_InitStruct.GPIO_Pin = TempoEncoder_Pin2_PIN;
   GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
