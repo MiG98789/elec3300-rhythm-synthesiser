@@ -40,9 +40,9 @@ static uint8_t ReadTouchscreen(uint8_t controlByte) {
   Timer_Delay(28);
 
   for (i = 0; i < 8; i++) {
+    PulseDCLK();
     coord = coord << 1;
     coord |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
-    PulseDCLK();
   }
 
   Timer_Delay(28);
