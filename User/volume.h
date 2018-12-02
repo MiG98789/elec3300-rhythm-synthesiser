@@ -1,11 +1,12 @@
+// File:            volume.h
+// Module:          Volume
+// Description:     Manages master and instrument volumes
+
 #ifndef __VOLUME_H
 #define __VOLUME_H
 
-#include <stdint.h>
+#define Volume_Max 0xFFFF
 
-extern uint16_t INSTRUMENT_VOLUMES[8];
-extern uint16_t MASTER_VOLUME;
-
-void READ_VOLUME_POTENTIOMETERS(void);
+void Volume_Init(void);
 
 #endif

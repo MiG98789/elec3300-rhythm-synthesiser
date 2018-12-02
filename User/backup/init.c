@@ -58,7 +58,7 @@ static void initGPIOB(void) {
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 	
 	// Pattern:
-  // Buttons: CLK - PB5, QH - PB6, SH/LD - PB7
+  // Buttons: CLK - PA8, QH - PB6, SH/LD - PB7
   // LEDs: SRCLK - PB14, RCLK - PB13, SER - PB12
 	GPIO_InitStruct.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7 | GPIO_Pin_12 | GPIO_Pin_13 | GPIO_Pin_14;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
@@ -80,6 +80,7 @@ static void initGPIOB(void) {
 
 static void initGPIOC(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
+<<<<<<< Updated upstream
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
   
   // Volume: A - PC8, B - PC9
@@ -98,6 +99,16 @@ static void initGPIOD(void) {
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(GPIOD, &GPIO_InitStruct);
+=======
+  
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+  
+  // K2
+  GPIO_InitStruct.GPIO_Pin = GPIO_Pin_13;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+  GPIO_Init(GPIOC, &GPIO_InitStruct);
+>>>>>>> Stashed changes
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -143,59 +154,14 @@ static void initTIM6(void) {
 // DMA init
 ////////////////////////////////////////////////////////////////////////////////
 
-// DMA for DAC1
-static void initDMA2Channel3(void) {
-  DMA_InitTypeDef DMA_InitStruct;
-  NVIC_InitTypeDef NVIC_InitStruct;
-  
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
-  
-  DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t) &DAC->DHR12R1;
-  DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t) AUDIO_BUFFER;
-  DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralDST;
-  DMA_InitStruct.DMA_BufferSize = STEP_SIZE;
-  DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
-  DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
-  DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
-  DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-  DMA_InitStruct.DMA_Mode = DMA_Mode_Circular;
-  DMA_InitStruct.DMA_Priority = DMA_Priority_High;
-  DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
-  DMA_Init(DMA2_Channel3, &DMA_InitStruct);
-  DMA_ITConfig(DMA2_Channel3, DMA_IT_TC, ENABLE);
-  DMA_Cmd(DMA2_Channel3, ENABLE);
-  
-  NVIC_InitStruct.NVIC_IRQChannel = DMA2_Channel3_IRQn;
-  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStruct);
-}
 
-////////////////////////////////////////////////////////////////////////////////
-// DAC init
-////////////////////////////////////////////////////////////////////////////////
-
-static void initDAC1(void) {
-  DAC_InitTypeDef DAC_InitStruct;
-  
-  RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
-  
-  DAC_InitStruct.DAC_Trigger = DAC_Trigger_T6_TRGO;
-  DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_None;
-  DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
-  
-  DAC_Init(DAC_Channel_1, &DAC_InitStruct);
-  DAC_DMACmd(DAC_Channel_1, ENABLE);
-  DAC_SetChannel1Data(DAC_Align_12b_R, 2048);
-  DAC_Cmd(DAC_Channel_1, ENABLE);
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 // ADC init
 ////////////////////////////////////////////////////////////////////////////////
 
 static void initADC1(void) {
+<<<<<<< Updated upstream
   // For volume panel: COM OUT/IN - PA6 (ADC1 IN6)
   
   ADC_InitTypeDef ADC_InitStruct;
@@ -249,6 +215,19 @@ static void initADC2(void) {
 	ADC_StartCalibration(ADC2);
 	/* Check the end of ADC2 calibration */
 	while(ADC_GetCalibrationStatus(ADC2));
+=======
+  ADC_InitTypeDef ADC_InitStruct;
+  
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1, ENABLE);
+  
+  ADC_InitStruct.ADC_Mode = ADC_Mode_Independent;
+  ADC_InitStruct.ADC_ScanConvMode = DISABLE;
+  ADC_InitStruct.ADC_ContinuousConvMode = DISABLE;
+  ADC_InitStruct.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T1_CC1;
+  ADC_InitStruct.ADC_DataAlign = ADC_DataAlign_Right;
+  ADC_InitStruct.ADC_NbrOfChannel = 1;
+  ADC_Init(ADC1, &ADC_InitStruct);
+>>>>>>> Stashed changes
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -261,7 +240,10 @@ void INIT_ALL(void) {
   initGPIOA();
   initGPIOB();
   initGPIOC();
+<<<<<<< Updated upstream
   initGPIOD();
+=======
+>>>>>>> Stashed changes
 
   initTIM3();
   initTIM6();

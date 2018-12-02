@@ -1,15 +1,18 @@
+// File:          pattern.h
+// Module:        Pattern
+// Description:   Stores user-created pattern arrays. The j-th bit in the i-th
+//                element of a pattern array is 1 if the i-th instrument is
+//                active on the j-th step of the pattern, and 0 otherwise.
+
 #ifndef __PATTERN_H
 #define __PATTERN_H
 
 #include <stdint.h>
 
-extern uint16_t PATTERNS[16][8];
-extern uint8_t CURR_PATTERN;
-extern uint8_t CURR_INSTRUMENT;
-extern uint16_t CURR_STEP;
+#define Pattern_Count 16
 
-void READ_PATTERN_BUTTONS(void);
-void SEND_PATTERN_LED_COMMANDS(void);
-void STEP_PATTERN(void);
+void Pattern_Init(void);
+
+const uint16_t* Pattern_Data(int i);
 
 #endif

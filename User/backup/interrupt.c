@@ -14,10 +14,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 void DMA2_Channel3_IRQHandler(void) {
-  if (DMA_GetITStatus(DMA2_IT_TC3)) {
-    STEP_PATTERN();
-    STEP_AUDIO();
-    DMA_ClearITPendingBit(DMA2_IT_TC3);
+  if (DMA_GetITStatus(DMA2_IT_HT3 | DMA2_IT_TC3)) {
+    AUDIO_TICK();
+    DMA_ClearITPendingBit(DMA2_IT_HT3 | DMA2_IT_TC3);
   }
 }
 
@@ -28,9 +27,13 @@ void DMA2_Channel3_IRQHandler(void) {
 void TIM3_IRQHandler(void) {	
 	if (TIM_GetITStatus(TIM3, TIM_IT_Update)) {
     READ_PATTERN_BUTTONS();
+<<<<<<< Updated upstream
     SEND_PATTERN_LED_COMMANDS();
     READ_VOLUME_POTENTIOMETERS();
     
+=======
+    SEND_LED_COMMANDS();
+>>>>>>> Stashed changes
 		TIM_ClearITPendingBit(TIM3, TIM_IT_Update);
 	}
 }

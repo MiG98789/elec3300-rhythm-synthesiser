@@ -1,6 +1,6 @@
-#include "app.h"
+#include "init.h"
 
 int main(void) {
-  App_Init();
+  INIT_ALL();
   while (1);
 }

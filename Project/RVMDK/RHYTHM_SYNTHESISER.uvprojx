@@ -475,6 +475,11 @@
               <FilePath>..\..\Libraries\FWlib\src\stm32f10x_i2c.c</FilePath>
             </File>
             <File>
+              <FileName>stm32f10x_it.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Libraries\FWlib\src\stm32f10x_it.c</FilePath>
+            </File>
+            <File>
               <FileName>stm32f10x_iwdg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Libraries\FWlib\src\stm32f10x_iwdg.c</FilePath>
@@ -522,37 +527,132 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>USER</GroupName>
+          <GroupName>DRIVERS</GroupName>
           <Files>
             <File>
               <FileName>audio.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\audio.c</FilePath>
+              <FilePath>..\..\User\drivers\audio.c</FilePath>
             </File>
             <File>
-              <FileName>helper.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\helper.c</FilePath>
+              <FileName>audio.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\audio.h</FilePath>
             </File>
             <File>
-              <FileName>init.c</FileName>
+              <FileName>cd4051b.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\init.c</FilePath>
+              <FilePath>..\..\User\drivers\cd4051b.c</FilePath>
             </File>
             <File>
-              <FileName>instruments.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\instruments.c</FilePath>
+              <FileName>cd4051b.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\cd4051b.h</FilePath>
             </File>
             <File>
-              <FileName>interrupt.c</FileName>
+              <FileName>instrument.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\interrupt.c</FilePath>
+              <FilePath>..\..\User\drivers\instrument.c</FilePath>
             </File>
             <File>
-              <FileName>lcd.c</FileName>
+              <FileName>instrument.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\instrument.h</FilePath>
+            </File>
+            <File>
+              <FileName>k1.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\User\lcd.c</FilePath>
+              <FilePath>..\..\User\drivers\k1.c</FilePath>
+            </File>
+            <File>
+              <FileName>k1.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\k1.h</FilePath>
+            </File>
+            <File>
+              <FileName>k2.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\k2.c</FilePath>
+            </File>
+            <File>
+              <FileName>k2.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\k2.h</FilePath>
+            </File>
+            <File>
+              <FileName>k3.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\k3.c</FilePath>
+            </File>
+            <File>
+              <FileName>k3.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\k3.h</FilePath>
+            </File>
+            <File>
+              <FileName>mastervolumepot.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\mastervolumepot.c</FilePath>
+            </File>
+            <File>
+              <FileName>mastervolumepot.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\mastervolumepot.h</FilePath>
+            </File>
+            <File>
+              <FileName>sn74hc166.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\sn74hc166.c</FilePath>
+            </File>
+            <File>
+              <FileName>sn74hc166.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\sn74hc166.h</FilePath>
+            </File>
+            <File>
+              <FileName>sn74hc595.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\sn74hc595.c</FilePath>
+            </File>
+            <File>
+              <FileName>sn74hc595.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\sn74hc595.h</FilePath>
+            </File>
+            <File>
+              <FileName>tempoencoder.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\tempoencoder.c</FilePath>
+            </File>
+            <File>
+              <FileName>tempoencoder.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\tempoencoder.h</FilePath>
+            </File>
+            <File>
+              <FileName>tsc2046.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\tsc2046.c</FilePath>
+            </File>
+            <File>
+              <FileName>tsc2046.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\tsc2046.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>USER</GroupName>
+          <Files>
+            <File>
+              <FileName>app.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\app.c</FilePath>
+            </File>
+            <File>
+              <FileName>app.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\app.h</FilePath>
             </File>
             <File>
               <FileName>main.c</FileName>
@@ -565,59 +665,49 @@
               <FilePath>..\..\User\pattern.c</FilePath>
             </File>
             <File>
-              <FileName>volume.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\volume.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_it.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\stm32f10x_it.c</FilePath>
-            </File>
-            <File>
-              <FileName>ascii.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\ascii.h</FilePath>
-            </File>
-            <File>
-              <FileName>audio.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\audio.h</FilePath>
-            </File>
-            <File>
-              <FileName>init.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\init.h</FilePath>
-            </File>
-            <File>
-              <FileName>instruments.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\instruments.h</FilePath>
-            </File>
-            <File>
-              <FileName>lcd.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\lcd.h</FilePath>
-            </File>
-            <File>
               <FileName>pattern.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\pattern.h</FilePath>
             </File>
             <File>
+              <FileName>player.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\player.c</FilePath>
+            </File>
+            <File>
+              <FileName>player.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\player.h</FilePath>
+            </File>
+            <File>
+              <FileName>tempo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\tempo.c</FilePath>
+            </File>
+            <File>
+              <FileName>tempo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\tempo.h</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\timer.h</FilePath>
+            </File>
+            <File>
+              <FileName>volume.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\volume.c</FilePath>
+            </File>
+            <File>
               <FileName>volume.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\volume.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_conf.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\stm32f10x_conf.h</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f10x_it.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\stm32f10x_it.h</FilePath>
             </File>
           </Files>
         </Group>
