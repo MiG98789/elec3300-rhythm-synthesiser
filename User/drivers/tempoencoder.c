@@ -12,30 +12,30 @@ static void InitGPIO(void) {
   RCC_APB2PeriphClockCmd(TempoEncoder_Pin2_CLK, ENABLE);
 
   GPIO_InitStruct.GPIO_Pin = TempoEncoder_Pin1_PIN;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(TempoEncoder_Pin1_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(TempoEncoder_Pin1_PORT, &GPIO_InitStruct);
 
   GPIO_InitStruct.GPIO_Pin = TempoEncoder_Pin2_PIN;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
-	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
-	GPIO_Init(TempoEncoder_Pin2_PORT, &GPIO_InitStruct);
+  GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPD;
+  GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
+  GPIO_Init(TempoEncoder_Pin2_PORT, &GPIO_InitStruct);
 }
 
 static void InitEXTI(void) {
   EXTI_InitTypeDef EXTI_InitStruct;
   NVIC_InitTypeDef NVIC_InitStruct_95;
 
-	EXTI_InitStruct.EXTI_Line = EXTI_Line6;
-	EXTI_InitStruct.EXTI_LineCmd = ENABLE;
-	EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-	EXTI_Init(&EXTI_InitStruct);
+  EXTI_InitStruct.EXTI_Line = EXTI_Line6;
+  EXTI_InitStruct.EXTI_LineCmd = ENABLE;
+  EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
+  EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
+  EXTI_Init(&EXTI_InitStruct);
 
   NVIC_InitStruct_95.NVIC_IRQChannel = EXTI9_5_IRQn;
   NVIC_InitStruct_95.NVIC_IRQChannelPreemptionPriority = 0x00;
-	NVIC_InitStruct_95.NVIC_IRQChannelSubPriority = 0x00;
-	NVIC_InitStruct_95.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_InitStruct_95.NVIC_IRQChannelSubPriority = 0x00;
+  NVIC_InitStruct_95.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStruct_95);
 }
 
