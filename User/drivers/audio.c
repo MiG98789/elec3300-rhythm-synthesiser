@@ -13,28 +13,28 @@ static void InitGPIO(void) {
   GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
-static void InitDMA(const uint16_t* buffer, int bufferSize) {
+static void InitDMA() {
   DMA_InitTypeDef DMA_InitStruct;
   NVIC_InitTypeDef NVIC_InitStruct;
   
-  RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
+  RCC_AHBPeriphClockCmd(Audio_DMA_CLK, ENABLE);
     
   DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t) &DAC->DHR12L1;
-  DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t) buffer;
+  DMA_InitStruct.DMA_MemoryBaseAddr = 0;
   DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralDST;
-  DMA_InitStruct.DMA_BufferSize = bufferSize;
+  DMA_InitStruct.DMA_BufferSize = 0;
   DMA_InitStruct.DMA_PeripheralInc = DMA_PeripheralInc_Disable;
   DMA_InitStruct.DMA_MemoryInc = DMA_MemoryInc_Enable;
   DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
   DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
-  DMA_InitStruct.DMA_Mode = DMA_Mode_Circular;
+  DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
   DMA_InitStruct.DMA_Priority = DMA_Priority_Low;
   DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
-  DMA_Init(DMA2_Channel3, &DMA_InitStruct);
-  DMA_ITConfig(DMA2_Channel3, DMA_IT_HT | DMA_IT_TC, ENABLE);
-  DMA_Cmd(DMA2_Channel3, ENABLE);
+  DMA_Init(Audio_DMA, &DMA_InitStruct);
+  DMA_ITConfig(Audio_DMA, DMA_IT_TC, ENABLE);
+  DMA_Cmd(Audio_DMA, ENABLE);
   
-  NVIC_InitStruct.NVIC_IRQChannel = DMA2_Channel3_IRQn;
+  NVIC_InitStruct.NVIC_IRQChannel = Audio_DMA_IRQn;
   NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
   NVIC_InitStruct.NVIC_IRQChannelSubPriority = 1;
   NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
@@ -53,7 +53,7 @@ static void InitDAC(void) {
 
   DAC_DMACmd(DAC_Channel_1, ENABLE);
   DAC_Cmd(DAC_Channel_1, ENABLE);
-  DAC_SetChannel1Data(DAC_Align_12b_L, Audio_Bias);
+  DAC_SetChannel1Data(DAC_Align_12b_L, 0x8000);
 }
 
 static void InitTIM(void) {
@@ -71,13 +71,20 @@ static void InitTIM(void) {
   TIM_Cmd(TIM6, ENABLE);
 }
 
-void Audio_Init(const uint16_t* buffer, int bufferSize) {
+extern void Audio_Init() {
   static int init = 0;
   if (init) return;
   else init = 1;
 
   InitGPIO();
-  InitDMA(buffer, bufferSize);
+  InitDMA();
   InitDAC();
   InitTIM();
+}
+
+extern void Audio_SetBuffer(const uint16_t* buffer, int bufferSize) {
+  DMA_Cmd(Audio_DMA, DISABLE);
+  Audio_DMA->CMAR = (uint32_t) buffer;
+  Audio_DMA->CNDTR = bufferSize;
+  DMA_Cmd(Audio_DMA, ENABLE);
 }

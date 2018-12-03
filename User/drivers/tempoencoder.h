@@ -25,5 +25,6 @@
 
 void TempoEncoder_Init(void);
 void TempoEncoder_SetChangeHandler(void handler(int));
+int TempoEncoder_TempoBPM(void);
 
 #endif

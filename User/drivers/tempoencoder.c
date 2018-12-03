@@ -59,6 +59,10 @@ extern void TempoEncoder_SetChangeHandler(void handler(int)) {
   EncoderHandler = handler;
 }
 
+extern int TempoEncoder_TempoBPM(void) {
+  return TempoBPM;
+}
+
 extern void EXTI9_5_IRQHandler(void) {
   static int currState = 0;
   static int prevState = 0;

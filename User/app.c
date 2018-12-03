@@ -108,12 +108,13 @@ extern void App_ToggleCurrStatus(void) {
     case App_Status_Stopped:
       CurrStatus = App_Status_Started;
       SN74HC595_SetState(Pattern_CurrPattern());
-      Player_Stop();
+      CurrStep = 0x1;
+      Player_Start();
       break;
     case App_Status_Started:
       CurrStatus = App_Status_Stopped;
       SN74HC595_SetFlash(0x8000 >> CurrPattern);
-      Player_Start();
+      Player_Stop();
       break;
   }
   Screen_UpdateCurrStatus();

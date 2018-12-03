@@ -2,13 +2,17 @@
 
 #include "drivers/audio.h"
 #include "drivers/instrument.h"
+#include "drivers/tempoencoder.h"
 
 #include "app.h"
 #include "pattern.h"
 #include "player.h"
 #include "volume.h"
 
-static uint16_t Buffer[Player_BufferSize] = { 0 };
+static uint16_t Buffer[2][Player_BufferSize] = { 0 };
+static int PrevBuffer = 0;
+static int CurrBuffer = 1;
+static uint16_t CurrStep;
 
 static const int16_t* Data[Player_NumTracks] = { 0 };
 static int16_t        Size[Player_NumTracks] = { 0 };
@@ -18,7 +22,11 @@ static int16_t        Queue[Player_NumTracks] = { 0 };
 static int head = 0;
 static int tail = 0;
 
-static const uint16_t Period = 4000;
+static int Period = 4000;
+
+static void UpdatePeriod(void) {
+  Period = 480000 / TempoEncoder_TempoBPM();
+}
 
 static void Push(int16_t item) {
   Queue[tail] = item;
@@ -31,6 +39,12 @@ static int16_t Pop(void) {
   if (++head == Player_NumTracks)
     head = 0;
   return item;
+}
+
+static void InitBuffer(void) {
+  int i;
+  for (i = 0; i < Player_BufferSize; ++i)
+    Buffer[0][i] = Buffer[1][i] = 0x8000;
 }
 
 static void InitQueue(void) {
@@ -63,9 +77,6 @@ static int32_t ReadData(int i) {
   int32_t volume = Volume_InstrumentVolume(Index[i]);
   ApplyVolume(&sample, volume);
   return sample;
-}
-
-static void WriteSample(uint16_t* buffer) {
 }
 
 static void EnqueueInstruments(void) {
@@ -110,30 +121,33 @@ extern void Player_Init(void) {
   static int init = 0;
   if (init) return;
   else init = 1;
+  
+  Audio_Init();
 
-  Audio_Init(Buffer, Period << 1);
+  InitBuffer();
   InitQueue();
   InitIndex();
 }
 
 extern void Player_Start(void) {
-  
+  Audio_SetBuffer(Buffer[PrevBuffer], Period);
 }
 
 extern void Player_Stop(void) {
-  
+  Audio_SetBuffer(0, 0);
 }
 
 extern void DMA2_Channel3_IRQHandler(void) {
-  if (DMA_GetITStatus(DMA2_IT_HT3 | DMA2_IT_TC3)) {
+  if (DMA_GetITStatus(DMA2_IT_TC3)) {
+    PrevBuffer ^= 0x1;
+    CurrBuffer ^= 0x1;
+    Audio_SetBuffer(Buffer[PrevBuffer], Period);
+
+    UpdatePeriod();
     App_RotateCurrStep();
     EnqueueInstruments();
-    if (DMA_GetITStatus(DMA2_IT_HT3)) {
-      WriteBuffer(Buffer);
-      DMA_ClearITPendingBit(DMA2_IT_HT3);
-    } else {
-      WriteBuffer(Buffer + Period);
-      DMA_ClearITPendingBit(DMA2_IT_TC3);
-    }
+    WriteBuffer(Buffer[CurrBuffer]);
+
+    DMA_ClearITPendingBit(DMA2_IT_TC3);
   }
 }
