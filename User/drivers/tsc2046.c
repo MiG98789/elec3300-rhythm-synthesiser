@@ -1,14 +1,13 @@
 #include "stm32f10x.h"
 
-#include "../backup/lcd.h"
 #include "tsc2046.h"
-#include "timer.h"
+#include "delay.h"
 
 static void (*TouchHandler)(uint8_t x, uint8_t y) = 0;
 
 static void PulseDCLK(void) {
   GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_SET);
-  Timer_Delay(14);
+  Delay_Cycles(14);
   GPIO_WriteBit(TSC2046_DCLK_PORT, TSC2046_DCLK_PIN, Bit_RESET);
 }
 
@@ -37,7 +36,7 @@ static uint8_t ReadTouchscreen(uint8_t controlByte) {
     PulseDCLK();
   }
 
-  Timer_Delay(28);
+  Delay_Cycles(28);
 
   for (i = 0; i < 8; i++) {
     PulseDCLK();
@@ -45,7 +44,7 @@ static uint8_t ReadTouchscreen(uint8_t controlByte) {
     coord |= GPIO_ReadInputDataBit(TSC2046_DOUT_PORT, TSC2046_DOUT_PIN);
   }
 
-  Timer_Delay(28);
+  Delay_Cycles(28);
 
   return coord;
 }
@@ -105,6 +104,12 @@ static void InitEXTI(void) {
 }
 
 extern void TSC2046_Init(void) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+
+  Delay_Init();
+
   InitGPIO();
   InitEXTI();
 }
