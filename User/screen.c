@@ -34,7 +34,7 @@ static void DrawButtons(void) {
 static void OnTouch(uint8_t x, uint8_t y) {
   static uint8_t prevInstrument = 0;
   uint16_t yScale = 0;
-  char output[9] = "";
+  char output[16] = "";
   snprintf(output, sizeof(output), "(%d,%d)", x, y);
 
   LCD_DrawString(0x78, 0x60, "         ");
@@ -60,7 +60,7 @@ static void OnTouch(uint8_t x, uint8_t y) {
 }
 
 static void OnTempoChange(int tempoBPM) {
-  char output[3] = "";
+  char output[16] = "";
   if (tempoBPM < 100)
     snprintf(output, sizeof(output), "%d ", tempoBPM);
   else
@@ -71,7 +71,7 @@ static void OnTempoChange(int tempoBPM) {
 
 static void VolumePoll(void) {
   static uint16_t tempVolume = 0;
-  static char tempBuffer[4];
+  static char tempBuffer[16];
 
   tempVolume = Volume_MasterVolume();
 

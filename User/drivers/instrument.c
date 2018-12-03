@@ -28,8 +28,8 @@ static const int16_t Data_08[] = { -194, 315, -416, 546, -744, 2200, -4993, 3539
 static const int16_t* Data[] = { Data_01, Data_02, Data_03, Data_04, Data_05, Data_06, Data_07, Data_08 };
 #else 
 static const int16_t* Data[] = { Data_01 };
-static const uint16_t Size[] = { 12399, 7848, 19040, 1094, 12492, 15372, 25263, 4783 };
 #endif
+static const uint16_t Size[] = { 12399, 7848, 19040, 1094, 12492, 15372, 25263, 4783 };
 static const char* Name[] = {
   "Kick",
   "Snare",

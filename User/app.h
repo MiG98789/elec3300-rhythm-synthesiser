@@ -36,5 +36,6 @@ int App_CurrInstrument(void);
 
 void App_RotateCurrStep(void);
 uint16_t App_CurrStep(void);
+uint16_t App_NextStep(void);
 
 #endif

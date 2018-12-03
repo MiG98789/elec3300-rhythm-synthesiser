@@ -108,12 +108,13 @@ extern void App_ToggleCurrStatus(void) {
     case App_Status_Stopped:
       CurrStatus = App_Status_Started;
       SN74HC595_SetState(Pattern_CurrPattern());
-      Player_Stop();
+      CurrStep = 0x1;
+      Player_Start();
       break;
     case App_Status_Started:
       CurrStatus = App_Status_Stopped;
       SN74HC595_SetFlash(0x8000 >> CurrPattern);
-      Player_Start();
+      Player_Stop();
       break;
   }
   Screen_UpdateCurrStatus();
@@ -136,14 +137,19 @@ extern int App_CurrPattern(void) {
 extern void App_SetCurrInstrument(int instrument) {
   CurrInstrument = instrument;
   Screen_UpdateCurrInstrument();
+  if (CurrMode == App_Mode_Edit && CurrStatus == App_Status_Started)
+    SN74HC595_SetState(Pattern_CurrPattern());
 }
 
 extern int App_CurrInstrument(void) {
   return CurrInstrument;
 }
 
+extern void App_RenderStep(void) {
+}
+
 extern void App_RotateCurrStep(void) {
-  CurrStep = (CurrStep >> 1) | (CurrStep << 15);
+  CurrStep = App_NextStep();
   Screen_UpdateCurrStep();
   if (CurrStatus == App_Status_Started)
     SN74HC595_SetBlink(CurrStep);
@@ -151,4 +157,8 @@ extern void App_RotateCurrStep(void) {
 
 extern uint16_t App_CurrStep(void) {
   return CurrStep;
+}
+
+extern uint16_t App_NextStep(void) {
+  return (uint16_t) ((CurrStep >> 1) | (CurrStep << 15));
 }
