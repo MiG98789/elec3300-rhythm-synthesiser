@@ -635,6 +635,16 @@
               <FilePath>..\..\User\drivers\poll.h</FilePath>
             </File>
             <File>
+              <FileName>rgbled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\rgbled.c</FilePath>
+            </File>
+            <File>
+              <FileName>rgbled.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\rgbled.h</FilePath>
+            </File>
+            <File>
               <FileName>sn74hc166.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\drivers\sn74hc166.c</FilePath>
