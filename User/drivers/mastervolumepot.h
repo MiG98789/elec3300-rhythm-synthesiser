@@ -18,6 +18,7 @@
 #define MasterVolumePot_ADC_Channel ADC_Channel_7
 
 #define MasterVolumePot_MaxValue  0xFFF
+#define MasterVolumePot_MinValue  0x0C8
 
 void MasterVolumePot_Init(void);
 int16_t MasterVolumePot_Read(void);

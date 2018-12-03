@@ -3,7 +3,7 @@
 #include "app.h"
 #include "pattern.h"
 
-uint16_t Data[Pattern_NumPatterns][Instrument_NumInstruments] = { { 0xFFFF } };
+uint16_t Data[Pattern_NumPatterns][Instrument_NumInstruments] = { 0 };
 
 extern void Pattern_Init(void) {
   static int init = 0;

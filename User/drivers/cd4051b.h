@@ -31,6 +31,7 @@
 
 #define CD4051B_NumChannels 8
 #define CD4051B_MaxValue    0xFFF
+#define CD4051B_MinValue    0x0C8
 
 void CD4051B_Init(void);
 int16_t CD4051B_Read(int i);

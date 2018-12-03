@@ -4,7 +4,7 @@
 #include <stdint.h>
 
 #define Instrument_NumInstruments   8
-#define Instrument_NoData
+// #define Instrument_NoData
 
 void Instrument_Init(void);
 const int16_t* Instrument_Data(int i);

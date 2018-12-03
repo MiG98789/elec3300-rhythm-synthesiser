@@ -8,8 +8,12 @@
 
 #include <stdint.h>
 
-#define Audio_Bias 2048
+#define Audio_DMA_CLK       RCC_AHBPeriph_DMA2
+#define Audio_DMA           DMA2_Channel3
+#define Audio_DMA_IRQn      DMA2_Channel3_IRQn
 
-void Audio_Init(const uint16_t* buffer, int length);
+void Audio_Init(void);
+
+void Audio_SetBuffer(const uint16_t* buffer, int length);
 
 #endif
