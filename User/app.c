@@ -82,6 +82,7 @@ extern void App_Init(void) {
   
   K1_SetClickHandler(App_ToggleCurrMode);
   K2_SetClickHandler(App_ToggleCurrStatus);
+  K3_SetClickHandler(App_ClearCurrPattern);
   SN74HC166_SetRisingHandler(OnPatternPanelPress);
 }
 
@@ -122,6 +123,12 @@ extern void App_ToggleCurrStatus(void) {
 
 extern App_Status App_CurrStatus(void) {
   return CurrStatus;
+}
+
+extern void App_ClearCurrPattern(void) {
+  Pattern_ClearCurrPattern();
+  Screen_UpdateCurrPattern();
+  SN74HC595_SetState(0);
 }
 
 extern void App_SetCurrPattern(int pattern) {

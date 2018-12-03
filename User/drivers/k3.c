@@ -2,6 +2,8 @@
 
 #include "k3.h"
 
+static void (*ClickHandler)(void) = 0;
+
 static void InitGPIO(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
   
@@ -9,7 +11,7 @@ static void InitGPIO(void) {
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
   
   GPIO_InitStruct.GPIO_Pin = K3_PIN;
-	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
+	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IPU;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(K3_PORT, &GPIO_InitStruct);
   GPIO_EXTILineConfig(K3_PortSource, K3_PinSource);
@@ -39,4 +41,15 @@ extern void K3_Init(void) {
 
   InitGPIO();
   InitEXTI();
+}
+
+extern void K3_SetClickHandler(void handler(void)) {
+  ClickHandler = handler;
+}
+
+extern void EXTI3_IRQHandler(void) {
+if (EXTI_GetITStatus(EXTI_Line3)) {
+    if (ClickHandler) ClickHandler();
+    EXTI_ClearITPendingBit(EXTI_Line3);
+  }
 }

@@ -13,5 +13,6 @@
 #define K3_PinSource    GPIO_PinSource3
 
 void K3_Init(void);
+void K3_SetClickHandler(void handler(void));
 
 #endif
