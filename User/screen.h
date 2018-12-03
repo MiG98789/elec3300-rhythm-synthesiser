@@ -14,6 +14,4 @@ void Screen_UpdateCurrPattern(void);
 void Screen_UpdateCurrInstrument(void);
 void Screen_UpdateCurrStep(void);
 
-void Screen_Debug(void);
-
 #endif

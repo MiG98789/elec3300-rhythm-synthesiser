@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "drivers/instrument.h"
 #include "drivers/lcd.h"
 #include "drivers/poll.h"
 #include "drivers/tempoencoder.h"
@@ -28,36 +29,25 @@ static void OnTempoChange(int tempoBPM) {
 }
 
 static void VolumePoll(void) {
-  static int volumeIndex = 0;
-  static uint8_t yPos = 0;
   static uint16_t tempVolume = 0;
-  static char tempBuffer[3];
+  static char tempBuffer[4];
 
-  for (volumeIndex = -1; volumeIndex < 8; volumeIndex++) {
-    if (volumeIndex == -1) {
-      tempVolume = Volume_MasterVolume();
-      yPos = 0x70;
-    } else {
-      tempVolume = Volume_InstrumentVolume(volumeIndex);
-      yPos = 0x70 + (volumeIndex + 1)*0x10;
-    }
+  tempVolume = Volume_MasterVolume();
 
-    if (tempVolume < 10)
-      sprintf(tempBuffer, "%d   ", tempVolume);
-    else if (tempVolume < 100)
-      sprintf(tempBuffer, "%d  ", tempVolume);
-    else if (tempVolume < 1000)
-      sprintf(tempBuffer, "%d ", tempVolume);
-    else
-      sprintf(tempBuffer, "%d", tempVolume);
+  if (tempVolume < 10)
+    sprintf(tempBuffer, "%d   ", tempVolume);
+  else if (tempVolume < 100)
+    sprintf(tempBuffer, "%d  ", tempVolume);
+  else if (tempVolume < 1000)
+    sprintf(tempBuffer, "%d ", tempVolume);
+  else
+    sprintf(tempBuffer, "%d", tempVolume);
 
-    LCD_DrawString(0x78, yPos, tempBuffer);
-  }
+  LCD_DrawString(0x78, 0x70, tempBuffer);
 }
 
 extern void Screen_Init(void) {
-  static uint8_t volumeIndex = 0;
-  static char tempBuffer[50];
+  static uint8_t instrumentIndex = 0;
 
   static int init = 0;
   if (init) return;
@@ -75,17 +65,20 @@ extern void Screen_Init(void) {
   LCD_DrawString(0x00, 0x40, "Step:");
   LCD_DrawString(0x00, 0x50, "Tempo:");
   LCD_DrawString(0x00, 0x60, "Touch (X,Y):");
-
   LCD_DrawString(0x00, 0x70, "Master vol:");
-  for (volumeIndex = 0; volumeIndex < 8; volumeIndex++) {
-    sprintf(tempBuffer, "Volume %d:", volumeIndex + 1);
-    LCD_DrawString(0x00, 0x80 + volumeIndex*0x10, tempBuffer);
-  }
 
   LCD_DrawString(0x78, 0x50, "120");
   LCD_DrawString(0x78, 0x60, "(0,0)");
+  
+  for (instrumentIndex = 0; instrumentIndex < 8; instrumentIndex++) {
+    if (instrumentIndex == App_CurrInstrument())
+      LCD_DrawButton(0x00, 0x80 + 0x30*instrumentIndex, Instrument_Name(instrumentIndex), CYAN);
+    else if (instrumentIndex < 4)
+      LCD_DrawButton(0x00, 0x80 + 0x30*instrumentIndex, Instrument_Name(instrumentIndex), WHITE);
+    else
+      LCD_DrawButton(0x78, 0x80 + 0x30*(instrumentIndex - 4), Instrument_Name(instrumentIndex), WHITE);
+  }
 
-  Poll_AddHandler(Screen_Debug);
   Poll_AddHandler(VolumePoll);
   TempoEncoder_SetChangeHandler(OnTempoChange);
   TSC2046_SetTouchHandler(OnTouch);
@@ -116,9 +109,4 @@ extern void Screen_UpdateCurrInstrument(void) {
 
 extern void Screen_UpdateCurrStep(void) {
   LCD_DrawDec(0x78, 0x40, App_CurrStep());
-}
-
-extern void Screen_Debug(void) {
-  LCD_DrawString(0x00, 0x130, "Debug:");
-  LCD_DrawDec(0x78, 0x130, GPIO_ReadInputDataBit(GPIOC, GPIO_Pin_13));
 }
