@@ -97,6 +97,8 @@ extern void CD4051B_Init() {
   
   Delay_Init();
 
+  CurrChannel = 0;
+
   InitState();
   InitGPIO();
   InitADC();
