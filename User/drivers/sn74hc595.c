@@ -10,7 +10,7 @@ static uint16_t State = 0x0;
 static uint16_t Flash = 0x0;
 static uint16_t Blink = 0x0;
 
-static const uint16_t FlashPeriod = 15;
+static const uint16_t FlashPeriod = 10;
 static uint16_t FlashCounter = 0x0;
 static uint16_t FlashEnable = 0xFFFF;
 

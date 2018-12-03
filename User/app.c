@@ -20,6 +20,7 @@
 static App_Mode CurrMode = App_Mode_Play;
 static App_Status CurrStatus = App_Status_Started;
 static int CurrPattern = 0;
+static int NextPattern = 0;
 static int CurrInstrument = 0;
 static uint16_t CurrStep = 0x1;
 
@@ -46,14 +47,16 @@ static void OnPatternPanelPress(uint16_t toggle) {
     case App_Mode_Play:
       switch (CurrStatus) {
         case App_Status_Started:
+          NextPattern = MsbIndex(toggle);
+          if (NextPattern != CurrPattern)
+            SN74HC595_SetFlash(0x8000 >> NextPattern);
           break;
         case App_Status_Stopped:
+          App_SetCurrPattern(MsbIndex(toggle));
+          NextPattern = CurrPattern;
           break;
       }
       break;
-  }
-  if (CurrMode == App_Mode_Edit) {
-    
   }
 }
 
@@ -78,9 +81,10 @@ extern void App_Init(void) {
   Volume_Init();
 
   App_ToggleCurrMode();
-  App_ToggleCurrStatus();
   App_SetCurrPattern(0);
   App_SetCurrInstrument(0);
+
+  Screen_UpdateCurrStatus();
   
   K1_SetClickHandler(App_ToggleCurrMode);
   K2_SetClickHandler(App_ToggleCurrStatus);
@@ -100,6 +104,9 @@ extern void App_ToggleCurrMode(void) {
       RGBLED_SetColor(RGBLED_R);
       break;
   }
+  SN74HC595_SetFlash(0x8000 >> CurrPattern);
+  Player_Stop();
+  CurrStatus = App_Status_Stopped;
   Screen_UpdateCurrMode();
 }
 
@@ -112,7 +119,10 @@ extern void App_ToggleCurrStatus(void) {
   switch (CurrStatus) {
     case App_Status_Stopped:
       CurrStatus = App_Status_Started;
-      SN74HC595_SetState(Pattern_CurrPattern());
+      if (CurrMode == App_Mode_Edit)
+        SN74HC595_SetState(Pattern_CurrPattern());
+      else
+        SN74HC595_SetState(0x8000 >> CurrPattern);
       CurrStep = 0x1;
       Player_Start();
       break;
@@ -121,7 +131,7 @@ extern void App_ToggleCurrStatus(void) {
       SN74HC595_SetFlash(0x8000 >> CurrPattern);
       Player_Stop();
       break;
-  }
+  };
   Screen_UpdateCurrStatus();
 }
 
@@ -166,6 +176,11 @@ extern void App_RotateCurrStep(void) {
   Screen_UpdateCurrStep();
   if (CurrStatus == App_Status_Started)
     SN74HC595_SetBlink(CurrStep);
+  if (CurrMode == App_Mode_Play && CurrStep == 1) {
+    CurrPattern = NextPattern;
+    SN74HC595_SetFlash(0);
+    SN74HC595_SetState(0x8000 >> CurrPattern);
+  }
 }
 
 extern uint16_t App_CurrStep(void) {
