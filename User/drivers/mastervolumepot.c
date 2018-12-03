@@ -13,6 +13,7 @@ static void OnPoll(void) {
   ADC_SoftwareStartConvCmd(MasterVolumePot_ADC, ENABLE);
   while (ADC_GetSoftwareStartConvStatus(MasterVolumePot_ADC));
   State = ADC_GetConversionValue(MasterVolumePot_ADC);
+  if (State < 50) State = 0;
 }
 
 static void InitGPIO(void) {

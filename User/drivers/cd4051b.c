@@ -19,6 +19,7 @@ static void CD4051B_Poll(void) {
   ADC_SoftwareStartConvCmd(CD4051B_ADC, ENABLE);
   while (ADC_GetSoftwareStartConvStatus(CD4051B_ADC));
   State[Map[CurrChannel]] = ADC_GetConversionValue(CD4051B_ADC);
+  if (State[Map[CurrChannel]] < 50) State[Map[CurrChannel]] = 0;
   CurrChannel = (CurrChannel + 1) & 0x7;
 }
 
