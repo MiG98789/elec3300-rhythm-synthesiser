@@ -6,15 +6,14 @@
 
 static const uint8_t    Map[] = { 2, 6, 5, 4, 7, 0, 3, 1 };
 static int16_t          State[CD4051B_NumChannels];
+static int              CurrChannel;
 
 static void CD4051B_Poll(void) {
-  static int currChannel = 0;
   int i = 0;
-
   for (i = 0; i < 8; i++) {
-    BitAction A = currChannel & 0x1 ? Bit_SET : Bit_RESET;
-    BitAction B = currChannel & 0x2 ? Bit_SET : Bit_RESET;
-    BitAction C = currChannel & 0x4 ? Bit_SET : Bit_RESET;
+    BitAction A = CurrChannel & 0x1 ? Bit_SET : Bit_RESET;
+    BitAction B = CurrChannel & 0x2 ? Bit_SET : Bit_RESET;
+    BitAction C = CurrChannel & 0x4 ? Bit_SET : Bit_RESET;
 
     GPIO_WriteBit(CD4051B_A_PORT, CD4051B_A_PIN, A);
     GPIO_WriteBit(CD4051B_B_PORT, CD4051B_B_PIN, B);
@@ -24,10 +23,10 @@ static void CD4051B_Poll(void) {
 
     ADC_SoftwareStartConvCmd(CD4051B_ADC, ENABLE);
     while (ADC_GetSoftwareStartConvStatus(CD4051B_ADC));
-    State[Map[currChannel]] = ADC_GetConversionValue(CD4051B_ADC);
-    if (State[Map[currChannel]] < 50) State[Map[currChannel]] = 0;
+    State[Map[CurrChannel]] = ADC_GetConversionValue(CD4051B_ADC);
+    if (State[Map[CurrChannel]] < 50) State[Map[CurrChannel]] = 0;
 
-    currChannel = (currChannel + 1) & 7;
+    CurrChannel = (CurrChannel + 1) & 7;
 
     Delay_Cycles(52);
   }
