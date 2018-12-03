@@ -5,6 +5,7 @@
 #include "drivers/k2.h"
 #include "drivers/k3.h"
 #include "drivers/lcd.h"
+#include "drivers/rgbled.h"
 #include "drivers/sn74hc166.h"
 #include "drivers/sn74hc595.h"
 #include "drivers/tempoencoder.h"
@@ -65,6 +66,7 @@ extern void App_Init(void) {
   K1_Init();
   K2_Init();
   K3_Init();
+  RGBLED_Init();
   SN74HC166_Init();
   SN74HC595_Init();
   TempoEncoder_Init();
@@ -91,9 +93,11 @@ extern void App_ToggleCurrMode(void) {
   switch (CurrMode) {
     case App_Mode_Edit:
       CurrMode = App_Mode_Play;
+      RGBLED_SetColor(RGBLED_G);
       break;
     case App_Mode_Play:
       CurrMode = App_Mode_Edit;
+      RGBLED_SetColor(RGBLED_R);
       break;
   }
   Screen_UpdateCurrMode();

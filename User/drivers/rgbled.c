@@ -43,19 +43,19 @@ extern void RGBLED_Clear(void) {
 
 extern void RGBLED_SetColor(RGBLED_Color color) {
   switch (color) {
-    case R:
+    case RGBLED_R:
+      GPIO_WriteBit(RGBLED_R_PORT, RGBLED_R_PIN, Bit_RESET);
+      GPIO_WriteBit(RGBLED_G_PORT, RGBLED_G_PIN, Bit_SET);
+      GPIO_WriteBit(RGBLED_B_PORT, RGBLED_B_PIN, Bit_SET);
+      break;
+
+    case RGBLED_G:
       GPIO_WriteBit(RGBLED_R_PORT, RGBLED_R_PIN, Bit_SET);
       GPIO_WriteBit(RGBLED_G_PORT, RGBLED_G_PIN, Bit_RESET);
       GPIO_WriteBit(RGBLED_B_PORT, RGBLED_B_PIN, Bit_SET);
       break;
 
-    case G:
-      GPIO_WriteBit(RGBLED_R_PORT, RGBLED_R_PIN, Bit_SET);
-      GPIO_WriteBit(RGBLED_G_PORT, RGBLED_G_PIN, Bit_RESET);
-      GPIO_WriteBit(RGBLED_B_PORT, RGBLED_B_PIN, Bit_SET);
-      break;
-
-    case B:
+    case RGBLED_B:
       GPIO_WriteBit(RGBLED_R_PORT, RGBLED_R_PIN, Bit_SET);
       GPIO_WriteBit(RGBLED_G_PORT, RGBLED_G_PIN, Bit_SET);
       GPIO_WriteBit(RGBLED_B_PORT, RGBLED_B_PIN, Bit_RESET);
