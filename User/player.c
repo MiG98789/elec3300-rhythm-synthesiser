@@ -1,15 +1,16 @@
 #include "stm32f10x.h"
 
 #include "drivers/audio.h"
+#include "drivers/cd4051b.h"
 #include "drivers/instrument.h"
+#include "drivers/mastervolumepot.h"
 #include "drivers/tempoencoder.h"
 
 #include "app.h"
 #include "pattern.h"
 #include "player.h"
-#include "volume.h"
 
-static uint16_t Buffer[2][Player_BufferSize] = { 0 };
+static int16_t Buffer[2][Player_BufferSize] = { 0 };
 static int CurrBuffer = 0;
 static int NextBuffer = 1;
 
@@ -52,30 +53,21 @@ static void InitQueue(void) {
     Push(i);
 }
 
-static void InitIndex(void) {
-  int i;
-  for (i = 0; i < Player_NumTracks; ++i)
-    Index[i] = -1;
-}
-
-static void ApplyVolume(int32_t* sample, int16_t volume) {
-  *sample = *sample * volume >> 12;
-}
-
-static void ApplyClamp(int32_t* sample) {
-  *sample = *sample > 32767 ? 32767 : *sample;
-  *sample = *sample < -32768 ? -32768 : *sample;
-}
-
-static void ApplyBias(int32_t* sample) {
-  *sample ^= 0xFFFF8000;
-}
-
-static int32_t ReadData(int i) {
-  int32_t sample = *Data[i];
-  int32_t volume = Volume_InstrumentVolume(Index[i]);
-  ApplyVolume(&sample, volume);
-  return sample;
+static void WriteBuffer(int16_t* buffer) {
+  int track, volume, i;
+  for (i = 0; i < Period; ++i)
+    buffer[i] = 0;
+  for (track = 0; track < Player_NumTracks; ++track) {
+    volume = CD4051B_Read(Index[track]);
+    for (i = 0; Size[track] && i < Period; ++i) {
+      buffer[i] += *Data[track]++ * volume >> 12;
+      if (--Size[track] == 0)
+        Push(track);
+    }
+  }
+  volume = MasterVolumePot_Read();
+  for (i = 0; i < Period; ++i)
+    buffer[i] = (buffer[i] * volume >> 12) ^ 0xFFFF8000;
 }
 
 static void EnqueueInstruments(void) {
@@ -89,30 +81,6 @@ static void EnqueueInstruments(void) {
       Size[j] = Instrument_Size(i);
       Index[j] = i;
     }
-  }
-}
-
-static void WriteBuffer(uint16_t* buffer) {
-  const int16_t masterVolume = Volume_MasterVolume();
-  int i, j;
-  for (i = 0; i < Period; ++i) {
-    int32_t sample = 0;
-    for (j = 0; j < Player_NumTracks; ++j) {
-      if (Index[j] == -1) {
-        continue;
-      } else if (Size[j] == 0) {
-        Push(j);
-        Index[j] = -1;
-      } else {
-        sample += ReadData(j);
-        ++Data[j];
-        --Size[j];
-      }
-    }
-    ApplyVolume(&sample, masterVolume);
-    ApplyClamp(&sample);
-    ApplyBias(&sample);
-    *buffer++ = sample;
   }
 }
 
@@ -131,11 +99,10 @@ extern void Player_Init(void) {
 
   ResetBuffer();
   InitQueue();
-  InitIndex();
 }
 
 extern void Player_Start(void) {
-  Audio_SetBuffer(Buffer[CurrBuffer], Period);
+  Audio_SetBuffer((uint32_t) Buffer[CurrBuffer], Period);
   RenderStep();
 }
 
@@ -146,11 +113,11 @@ extern void Player_Stop(void) {
 
 extern void DMA2_Channel3_IRQHandler(void) {
   if (DMA_GetITStatus(DMA2_IT_TC3)) {
+    DMA_ClearITPendingBit(DMA2_IT_TC3);
     CurrBuffer ^= 0x1;
     NextBuffer ^= 0x1;
-    Audio_SetBuffer(Buffer[CurrBuffer], Period);
+    Audio_SetBuffer((uint32_t) Buffer[CurrBuffer], Period);
     App_RotateCurrStep();
     RenderStep();
-    DMA_ClearITPendingBit(DMA2_IT_TC3);
   }
 }
