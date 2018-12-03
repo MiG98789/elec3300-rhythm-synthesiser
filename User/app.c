@@ -7,12 +7,13 @@
 #include "drivers/lcd.h"
 #include "drivers/sn74hc166.h"
 #include "drivers/sn74hc595.h"
+#include "drivers/tempoencoder.h"
+#include "drivers/tsc2046.h"
 
 #include "app.h"
 #include "pattern.h"
 #include "player.h"
 #include "screen.h"
-#include "tempo.h"
 #include "volume.h"
 
 static App_Mode CurrMode = App_Mode_Play;
@@ -66,11 +67,12 @@ extern void App_Init(void) {
   K3_Init();
   SN74HC166_Init();
   SN74HC595_Init();
+  TempoEncoder_Init();
+  TSC2046_Init();
 
   Pattern_Init();
   Player_Init();
   Screen_Init();
-  Tempo_Init();
   Volume_Init();
 
   App_ToggleCurrMode();

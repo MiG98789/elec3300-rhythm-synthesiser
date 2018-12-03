@@ -20,7 +20,6 @@
 #define MasterVolumePot_MaxValue  0xFFF
 
 void MasterVolumePot_Init(void);
-void MasterVolumePot_Poll(void);
 int16_t MasterVolumePot_Read(void);
 
 #endif

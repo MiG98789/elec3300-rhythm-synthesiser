@@ -57,6 +57,7 @@ static void InitGPIO(void) {
   RCC_APB2PeriphClockCmd(TSC2046_DIN_CLK, ENABLE);
   RCC_APB2PeriphClockCmd(TSC2046_DOUT_CLK, ENABLE);
   RCC_APB2PeriphClockCmd(TSC2046_PENIRQ_CLK, ENABLE);
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_AFIO, ENABLE);
 
   GPIO_InitStruct.GPIO_Pin = TSC2046_DCLK_PIN;
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_Out_PP;

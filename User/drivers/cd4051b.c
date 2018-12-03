@@ -2,10 +2,25 @@
 
 #include "cd4051b.h"
 #include "delay.h"
+#include "poll.h"
 
 static const uint8_t    Map[] = { 2, 6, 5, 4, 7, 0, 3, 1 };
 static int16_t          State[CD4051B_NumChannels];
 static int              CurrChannel;
+
+static void CD4051B_Poll(void) {
+  BitAction A = CurrChannel & 0x1 ? Bit_SET : Bit_RESET;
+  BitAction B = CurrChannel & 0x2 ? Bit_SET : Bit_RESET;
+  BitAction C = CurrChannel & 0x4 ? Bit_SET : Bit_RESET;
+  GPIO_WriteBit(CD4051B_A_PORT, CD4051B_A_PIN, A);
+  GPIO_WriteBit(CD4051B_B_PORT, CD4051B_B_PIN, B);
+  GPIO_WriteBit(CD4051B_C_PORT, CD4051B_C_PIN, C);
+  Delay_Cycles(52); // 722 ns
+  ADC_SoftwareStartConvCmd(CD4051B_ADC, ENABLE);
+  while (ADC_GetSoftwareStartConvStatus(CD4051B_ADC));
+  State[Map[CurrChannel]] = ADC_GetConversionValue(CD4051B_ADC);
+  CurrChannel = (CurrChannel + 1) & 0x7;
+}
 
 static void InitState(void) {
   int i;
@@ -76,20 +91,8 @@ extern void CD4051B_Init() {
   InitState();
   InitGPIO();
   InitADC();
-}
 
-extern void CD4051B_Poll(void) {
-  BitAction A = CurrChannel & 0x1 ? Bit_SET : Bit_RESET;
-  BitAction B = CurrChannel & 0x2 ? Bit_SET : Bit_RESET;
-  BitAction C = CurrChannel & 0x4 ? Bit_SET : Bit_RESET;
-  GPIO_WriteBit(CD4051B_A_PORT, CD4051B_A_PIN, A);
-  GPIO_WriteBit(CD4051B_B_PORT, CD4051B_B_PIN, B);
-  GPIO_WriteBit(CD4051B_C_PORT, CD4051B_C_PIN, C);
-  Delay_Cycles(52); // 722 ns
-  ADC_SoftwareStartConvCmd(CD4051B_ADC, ENABLE);
-  while (ADC_GetSoftwareStartConvStatus(CD4051B_ADC));
-  State[Map[CurrChannel]] = ADC_GetConversionValue(CD4051B_ADC);
-  CurrChannel = (CurrChannel + 1) & 0x7;
+  Poll_AddHandler(CD4051B_Poll);
 }
 
 int16_t CD4051B_Read(int i) {

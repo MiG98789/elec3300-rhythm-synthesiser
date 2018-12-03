@@ -5,6 +5,16 @@
 
 static int16_t State;
 
+static void OnPoll(void) {
+  static uint8_t cycles = 0;
+
+  cycles = (cycles + 1) & 7;
+  if (cycles != 0) return;
+  ADC_SoftwareStartConvCmd(MasterVolumePot_ADC, ENABLE);
+  while (ADC_GetSoftwareStartConvStatus(MasterVolumePot_ADC));
+  State = ADC_GetConversionValue(MasterVolumePot_ADC);
+}
+
 static void InitGPIO(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
   
@@ -47,17 +57,11 @@ extern void MasterVolumePot_Init(void) {
   Poll_Init();
 
   State = MasterVolumePot_MaxValue;
-  
+
   InitGPIO();
   InitADC();
 
-  Poll_AddHandler(MasterVolumePot_Poll);
-}
-
-extern void MasterVolumePot_Poll(void) {
-  ADC_SoftwareStartConvCmd(MasterVolumePot_ADC, ENABLE);
-  while (ADC_GetSoftwareStartConvStatus(MasterVolumePot_ADC));
-  State = ADC_GetConversionValue(MasterVolumePot_ADC);
+  Poll_AddHandler(OnPoll);
 }
 
 extern int16_t MasterVolumePot_Read(void) {
