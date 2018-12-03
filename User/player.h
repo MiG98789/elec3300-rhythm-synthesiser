@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #define Player_BufferSize 8000
-#define Player_NumTracks 8
+#define Player_NumTracks 16
 
 void Player_Init(void);
 void Player_Start(void);

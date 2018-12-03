@@ -10,9 +10,8 @@
 #include "volume.h"
 
 static uint16_t Buffer[2][Player_BufferSize] = { 0 };
-static int PrevBuffer = 0;
-static int CurrBuffer = 1;
-static uint16_t CurrStep;
+static int CurrBuffer = 0;
+static int NextBuffer = 1;
 
 static const int16_t* Data[Player_NumTracks] = { 0 };
 static int16_t        Size[Player_NumTracks] = { 0 };
@@ -41,7 +40,7 @@ static int16_t Pop(void) {
   return item;
 }
 
-static void InitBuffer(void) {
+static void ResetBuffer(void) {
   int i;
   for (i = 0; i < Player_BufferSize; ++i)
     Buffer[0][i] = Buffer[1][i] = 0x8000;
@@ -80,11 +79,11 @@ static int32_t ReadData(int i) {
 }
 
 static void EnqueueInstruments(void) {
-  uint16_t currPattern = App_CurrPattern();
-  uint16_t currStep = App_CurrStep();
+  const uint16_t currPattern = App_CurrPattern();
+  const uint16_t nextStep = App_NextStep();
   int i, j;
   for (i = 0; i < Instrument_NumInstruments; ++i) {
-    if (Pattern_Data(currPattern)[i] & currStep) {
+    if (Pattern_Data(currPattern)[i] & nextStep) {
       j = Pop();
       Data[j] = Instrument_Data(i);
       Size[j] = Instrument_Size(i);
@@ -117,6 +116,12 @@ static void WriteBuffer(uint16_t* buffer) {
   }
 }
 
+static void RenderStep() {
+  UpdatePeriod();
+  EnqueueInstruments();
+  WriteBuffer(Buffer[NextBuffer]);
+}
+
 extern void Player_Init(void) {
   static int init = 0;
   if (init) return;
@@ -124,30 +129,28 @@ extern void Player_Init(void) {
   
   Audio_Init();
 
-  InitBuffer();
+  ResetBuffer();
   InitQueue();
   InitIndex();
 }
 
 extern void Player_Start(void) {
-  Audio_SetBuffer(Buffer[PrevBuffer], Period);
+  Audio_SetBuffer(Buffer[CurrBuffer], Period);
+  RenderStep();
 }
 
 extern void Player_Stop(void) {
   Audio_SetBuffer(0, 0);
+  ResetBuffer();
 }
 
 extern void DMA2_Channel3_IRQHandler(void) {
   if (DMA_GetITStatus(DMA2_IT_TC3)) {
-    PrevBuffer ^= 0x1;
     CurrBuffer ^= 0x1;
-    Audio_SetBuffer(Buffer[PrevBuffer], Period);
-
-    UpdatePeriod();
+    NextBuffer ^= 0x1;
+    Audio_SetBuffer(Buffer[CurrBuffer], Period);
     App_RotateCurrStep();
-    EnqueueInstruments();
-    WriteBuffer(Buffer[CurrBuffer]);
-
+    RenderStep();
     DMA_ClearITPendingBit(DMA2_IT_TC3);
   }
 }

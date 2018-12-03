@@ -28,15 +28,15 @@ static void InitDMA() {
   DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
   DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
   DMA_InitStruct.DMA_Mode = DMA_Mode_Normal;
-  DMA_InitStruct.DMA_Priority = DMA_Priority_Low;
+  DMA_InitStruct.DMA_Priority = DMA_Priority_High;
   DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
   DMA_Init(Audio_DMA, &DMA_InitStruct);
   DMA_ITConfig(Audio_DMA, DMA_IT_TC, ENABLE);
   DMA_Cmd(Audio_DMA, ENABLE);
   
   NVIC_InitStruct.NVIC_IRQChannel = Audio_DMA_IRQn;
-  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
-  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
+  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
   NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStruct);
 }
