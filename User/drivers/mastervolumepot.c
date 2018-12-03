@@ -6,10 +6,6 @@
 static int16_t State;
 
 static void OnPoll(void) {
-  static uint8_t cycles = 0;
-
-  cycles = (cycles + 1) & 7;
-  if (cycles != 0) return;
   ADC_SoftwareStartConvCmd(MasterVolumePot_ADC, ENABLE);
   while (ADC_GetSoftwareStartConvStatus(MasterVolumePot_ADC));
   State = ADC_GetConversionValue(MasterVolumePot_ADC);
