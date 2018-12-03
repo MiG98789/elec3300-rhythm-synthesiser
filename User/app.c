@@ -7,6 +7,7 @@
 #include "drivers/lcd.h"
 #include "drivers/sn74hc166.h"
 #include "drivers/sn74hc595.h"
+#include "drivers/tsc2046.h"
 
 #include "app.h"
 #include "pattern.h"
@@ -37,6 +38,7 @@ extern void App_Init(void) {
   K3_Init();
   SN74HC166_Init();
   SN74HC595_Init();
+  TSC2046_Init();
 
   Pattern_Init();
   Player_Init();
