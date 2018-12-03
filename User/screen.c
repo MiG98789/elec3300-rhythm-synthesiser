@@ -11,9 +11,9 @@
 #include "volume.h"
 
 static void DrawButtons(void) {
-  static uint8_t instrumentIndex = 0;
-  static uint16_t xPos = 0x00;
-  static uint16_t yPos = 0x00;
+  uint8_t instrumentIndex = 0;
+  uint16_t xPos = 0x00;
+  uint16_t yPos = 0x00;
 
   for (instrumentIndex = 0; instrumentIndex < 8; instrumentIndex++) {
     if (instrumentIndex < 4) {
@@ -70,8 +70,8 @@ static void OnTempoChange(int tempoBPM) {
 }
 
 static void VolumePoll(void) {
-  static uint16_t tempVolume = 0;
-  static char tempBuffer[16];
+  uint16_t tempVolume = 0;
+  char tempBuffer[16];
 
   tempVolume = Volume_MasterVolume();
 
