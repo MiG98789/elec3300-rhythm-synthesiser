@@ -103,7 +103,7 @@ void 										 LCD_DrawCircle							 ( uint16_t usC, uint16_t usP, uint16_t R, 
 void                     LCD_DrawHex                 ( uint16_t usC, uint16_t usP, uint32_t x );
 void                     LCD_DrawDec                 ( uint16_t usC, uint16_t usP, uint32_t x );
 void                     LCD_DrawBin                 ( uint16_t usC, uint16_t usP, uint16_t x );
-void                     LCD_DrawButton              ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t usColor );
+void                     LCD_DrawButton              ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t fontColor, uint16_t backgroundColor );
 
 #endif 
 

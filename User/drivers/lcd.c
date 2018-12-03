@@ -653,7 +653,7 @@ void LCD_DrawBin (uint16_t usC, uint16_t usP, uint16_t x)
   LCD_DrawString(usC, usP, str);
 }
 
-void LCD_DrawButton (uint16_t usC, uint16_t usP, const char * pStr, uint16_t usColor) {
+void LCD_DrawButton (uint16_t usC, uint16_t usP, const char * pStr, uint16_t fontColor, uint16_t backgroundColor) {
   static const uint16_t buttonWidth = 0x78;
   static const uint16_t buttonHeight = 0x30;
   uint8_t charCount = 0;
@@ -661,14 +661,14 @@ void LCD_DrawButton (uint16_t usC, uint16_t usP, const char * pStr, uint16_t usC
   int padding = 0;
 
   LCD_OpenWindow(usC, usP, buttonWidth, buttonHeight);
-  LCD_FillColor(buttonWidth*buttonHeight, usColor);
+  LCD_FillColor(buttonWidth*buttonHeight, backgroundColor);
 
   for (charIndex = 0; pStr[charIndex]; charIndex++) {
     if (pStr[charIndex] != '\n')
       charCount++;
   }
   padding = 0x08*(15 - charCount)/2;
-  LCD_DrawColorString(usC + padding, usP + buttonHeight/2 - 0x10/2, pStr, BLUE, usColor);
+  LCD_DrawColorString(usC + padding, usP + buttonHeight/2 - 0x10/2, pStr, fontColor, backgroundColor);
 
   LCD_DrawLine(usC, usP, usC + buttonWidth, usP, BLACK);
   LCD_DrawLine(usC, usP, usC, usP + buttonHeight, BLACK);
