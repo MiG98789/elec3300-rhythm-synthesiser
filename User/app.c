@@ -5,6 +5,7 @@
 #include "drivers/k2.h"
 #include "drivers/k3.h"
 #include "drivers/lcd.h"
+#include "drivers/rgbled.h"
 #include "drivers/sn74hc166.h"
 #include "drivers/sn74hc595.h"
 #include "drivers/tempoencoder.h"
@@ -65,6 +66,7 @@ extern void App_Init(void) {
   K1_Init();
   K2_Init();
   K3_Init();
+  RGBLED_Init();
   SN74HC166_Init();
   SN74HC595_Init();
   TempoEncoder_Init();
@@ -82,6 +84,7 @@ extern void App_Init(void) {
   
   K1_SetClickHandler(App_ToggleCurrMode);
   K2_SetClickHandler(App_ToggleCurrStatus);
+  K3_SetClickHandler(App_ClearCurrPattern);
   SN74HC166_SetRisingHandler(OnPatternPanelPress);
 }
 
@@ -90,9 +93,11 @@ extern void App_ToggleCurrMode(void) {
   switch (CurrMode) {
     case App_Mode_Edit:
       CurrMode = App_Mode_Play;
+      RGBLED_SetColor(RGBLED_G);
       break;
     case App_Mode_Play:
       CurrMode = App_Mode_Edit;
+      RGBLED_SetColor(RGBLED_R);
       break;
   }
   Screen_UpdateCurrMode();
@@ -122,6 +127,14 @@ extern void App_ToggleCurrStatus(void) {
 
 extern App_Status App_CurrStatus(void) {
   return CurrStatus;
+}
+
+extern void App_ClearCurrPattern(void) {
+  if (CurrMode == App_Mode_Edit && CurrStatus == App_Status_Started) {
+    Pattern_ClearCurrPattern();
+    Screen_UpdateCurrPattern();
+    SN74HC595_SetState(0);
+  }
 }
 
 extern void App_SetCurrPattern(int pattern) {

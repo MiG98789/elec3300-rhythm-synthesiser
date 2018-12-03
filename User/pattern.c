@@ -13,6 +13,12 @@ extern void Pattern_Init(void) {
   Instrument_Init();
 }
 
+extern void Pattern_ClearCurrPattern(void) {
+  const int pattern = App_CurrPattern();
+  const int instrument = App_CurrInstrument();
+  Data[pattern][instrument] = 0;
+}
+
 extern void Pattern_ToggleCurrPattern(uint16_t toggle) {
   const int pattern = App_CurrPattern();
   const int instrument = App_CurrInstrument();

@@ -14,6 +14,7 @@
 
 void Pattern_Init(void);
 
+void Pattern_ClearCurrPattern(void);
 void Pattern_ToggleCurrPattern(uint16_t toggle);
 uint16_t Pattern_CurrPattern(void);
 
