@@ -11,9 +11,9 @@
 #include "volume.h"
 
 static void DrawButtons(void) {
-  static uint8_t instrumentIndex = 0;
-  static uint16_t xPos = 0x00;
-  static uint16_t yPos = 0x00;
+  uint8_t instrumentIndex = 0;
+  uint16_t xPos = 0x00;
+  uint16_t yPos = 0x00;
 
   for (instrumentIndex = 0; instrumentIndex < 8; instrumentIndex++) {
     if (instrumentIndex < 4) {
@@ -34,7 +34,7 @@ static void DrawButtons(void) {
 static void OnTouch(uint8_t x, uint8_t y) {
   static uint8_t prevInstrument = 0;
   uint16_t yScale = 0;
-  char output[9] = "";
+  char output[16] = "";
   snprintf(output, sizeof(output), "(%d,%d)", x, y);
 
   LCD_DrawString(0x78, 0x60, "         ");
@@ -60,7 +60,7 @@ static void OnTouch(uint8_t x, uint8_t y) {
 }
 
 static void OnTempoChange(int tempoBPM) {
-  char output[3] = "";
+  char output[16] = "";
   if (tempoBPM < 100)
     snprintf(output, sizeof(output), "%d ", tempoBPM);
   else
@@ -70,8 +70,8 @@ static void OnTempoChange(int tempoBPM) {
 }
 
 static void VolumePoll(void) {
-  static uint16_t tempVolume = 0;
-  static char tempBuffer[4];
+  uint16_t tempVolume = 0;
+  char tempBuffer[16];
 
   tempVolume = Volume_MasterVolume();
 

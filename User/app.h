@@ -28,6 +28,7 @@ App_Mode App_CurrMode(void);
 void App_ToggleCurrStatus(void);
 App_Status App_CurrStatus(void);
 
+void App_ClearCurrPattern(void);
 void App_SetCurrPattern(int pattern);
 int App_CurrPattern(void);
 
@@ -36,5 +37,6 @@ int App_CurrInstrument(void);
 
 void App_RotateCurrStep(void);
 uint16_t App_CurrStep(void);
+uint16_t App_NextStep(void);
 
 #endif
