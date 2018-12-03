@@ -41,6 +41,10 @@ static void InitEXTI(void) {
 }
 
 extern void TempoEncoder_Init(void) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+
   InitGPIO();
   InitEXTI();
 }
