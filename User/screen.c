@@ -11,8 +11,9 @@
 #include "volume.h"
 
 static void OnTouch(uint8_t x, uint8_t y) {
+  static int elapsed = 0;
   char output[9] = "";
-  sprintf(output, "(%d,%d)", x, y);
+  snprintf(output, sizeof(output), "(%d,%d)", x, y);
 
   LCD_DrawString(0x78, 0x60, "         ");
   LCD_DrawString(0x78, 0x60, output);
@@ -21,9 +22,9 @@ static void OnTouch(uint8_t x, uint8_t y) {
 static void OnTempoChange(int tempoBPM) {
   char output[3] = "";
   if (tempoBPM < 100)
-    sprintf(output, "%d ", tempoBPM);
+    snprintf(output, sizeof(output), "%d ", tempoBPM);
   else
-    sprintf(output, "%d", tempoBPM);
+    snprintf(output, sizeof(output), "%d", tempoBPM);
   
   LCD_DrawString(0x78, 0x50, output);
 }
@@ -35,13 +36,13 @@ static void VolumePoll(void) {
   tempVolume = Volume_MasterVolume();
 
   if (tempVolume < 10)
-    sprintf(tempBuffer, "%d   ", tempVolume);
+    snprintf(tempBuffer, sizeof(tempBuffer), "%d   ", tempVolume);
   else if (tempVolume < 100)
-    sprintf(tempBuffer, "%d  ", tempVolume);
+    snprintf(tempBuffer, sizeof(tempBuffer), "%d  ", tempVolume);
   else if (tempVolume < 1000)
-    sprintf(tempBuffer, "%d ", tempVolume);
+    snprintf(tempBuffer, sizeof(tempBuffer), "%d ", tempVolume);
   else
-    sprintf(tempBuffer, "%d", tempVolume);
+    snprintf(tempBuffer, sizeof(tempBuffer), "%d", tempVolume);
 
   LCD_DrawString(0x78, 0x70, tempBuffer);
 }
