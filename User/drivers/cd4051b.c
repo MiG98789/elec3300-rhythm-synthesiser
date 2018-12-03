@@ -9,8 +9,9 @@ static int16_t          State[CD4051B_NumChannels];
 
 static void CD4051B_Poll(void) {
   static int currChannel = 0;
+  int i = 0;
 
-  for (currChannel = 0; currChannel < 8; currChannel++) {
+  for (i = 0; i < 8; i++) {
     BitAction A = currChannel & 0x1 ? Bit_SET : Bit_RESET;
     BitAction B = currChannel & 0x2 ? Bit_SET : Bit_RESET;
     BitAction C = currChannel & 0x4 ? Bit_SET : Bit_RESET;
@@ -25,6 +26,10 @@ static void CD4051B_Poll(void) {
     while (ADC_GetSoftwareStartConvStatus(CD4051B_ADC));
     State[Map[currChannel]] = ADC_GetConversionValue(CD4051B_ADC);
     if (State[Map[currChannel]] < 50) State[Map[currChannel]] = 0;
+
+    currChannel = (currChannel + 1) & 7;
+
+    Delay_Cycles(52);
   }
 }
 
