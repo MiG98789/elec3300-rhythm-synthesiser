@@ -82,9 +82,9 @@ extern void Audio_Init() {
   InitTIM();
 }
 
-extern void Audio_SetBuffer(uint32_t buffer, int bufferSize) {
+extern void Audio_SetBuffer(const uint16_t* buffer, int bufferSize) {
   DMA_Cmd(Audio_DMA, DISABLE);
-  Audio_DMA->CMAR = buffer;
+  Audio_DMA->CMAR = (uint32_t) buffer;
   Audio_DMA->CNDTR = bufferSize;
   DMA_Cmd(Audio_DMA, ENABLE);
 }

@@ -14,6 +14,6 @@
 
 void Audio_Init(void);
 
-void Audio_SetBuffer(uint32_t buffer, int length);
+void Audio_SetBuffer(const uint16_t* buffer, int length);
 
 #endif
