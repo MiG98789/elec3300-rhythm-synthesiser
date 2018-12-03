@@ -146,11 +146,11 @@ extern void Player_Stop(void) {
 
 extern void DMA2_Channel3_IRQHandler(void) {
   if (DMA_GetITStatus(DMA2_IT_TC3)) {
+    DMA_ClearITPendingBit(DMA2_IT_TC3);
     CurrBuffer ^= 0x1;
     NextBuffer ^= 0x1;
     Audio_SetBuffer(Buffer[CurrBuffer], Period);
     App_RotateCurrStep();
     RenderStep();
-    DMA_ClearITPendingBit(DMA2_IT_TC3);
   }
 }
