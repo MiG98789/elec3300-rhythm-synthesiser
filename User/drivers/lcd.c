@@ -3,7 +3,6 @@
 
 #include <stdio.h>
 
-
 static void                   LCD_GPIO_Config         ( void );
 static void                   LCD_FSMC_Config         ( void );
 static void                   LCD_REG_Config          ( void );
@@ -14,6 +13,10 @@ void Delay ( __IO uint32_t nCount ){  for ( ; nCount != 0; nCount -- );}
 
 void LCD_INIT ( void )
 {
+	static int init = 0;
+  if (init) return;
+  else init = 1;
+
 	LCD_GPIO_Config ();
 	LCD_FSMC_Config ();
 	

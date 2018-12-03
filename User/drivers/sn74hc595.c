@@ -1,7 +1,8 @@
 #include "stm32f10x.h"
 
 #include "sn74hc595.h"
-#include "timer.h"
+#include "delay.h"
+#include "poll.h"
 
 static const int8_t Map[] = { 14, 13, 12, 11, 10, 9, 8, 15, 6, 5, 4, 3, 2, 1, 0, 7 };
 
@@ -15,25 +16,27 @@ static uint16_t FlashEnable = 0xFFFF;
 
 static void PulseSRCLK(void) {
   GPIO_WriteBit(SN74HC595_SRCLK_PORT, SN74HC595_SRCLK_PIN, Bit_RESET);
-  Timer_Delay(9); // 125ns
+  Delay_Cycles(9); // 125ns
   GPIO_WriteBit(SN74HC595_SRCLK_PORT, SN74HC595_SRCLK_PIN, Bit_SET);
 }
 
 static void PulseRCLK(void) {
   GPIO_WriteBit(SN74HC595_RCLK_PORT, SN74HC595_RCLK_PIN, Bit_RESET);
-  Timer_Delay(7); // 97ns
+  Delay_Cycles(7); // 97ns
   GPIO_WriteBit(SN74HC595_RCLK_PORT, SN74HC595_RCLK_PIN, Bit_SET);
 }
 
 static void WriteSER(BitAction ser) {
-  GPIO_WriteBit(SN74HC595_RCLK_PORT, SN74HC595_RCLK_PIN, ser);
+  GPIO_WriteBit(SN74HC595_SER_PORT, SN74HC595_SER_PIN, ser);
 }
 
 static void ShiftOut(uint16_t data) {
   int i;
   for (i = 0; i < 16; ++i) {
-    // Write i-th mapped bit to SER
-    WriteSER(data & (0x8000 >> Map[i]) ? Bit_SET : Bit_RESET);
+    if (data & (0x8000 >> Map[i]))
+      WriteSER(Bit_SET);
+    else
+      WriteSER(Bit_RESET);
     PulseSRCLK();
   }
   PulseRCLK();
@@ -63,10 +66,21 @@ static void InitGPIO(void) {
 }
 
 extern void SN74HC595_Init(void) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+  
+  Delay_Init();
+
   State = 0x0;
   Flash = 0x0;
   Blink = 0x0;
+  
   InitGPIO();
+  
+  ShiftOut(0x0);
+  
+  Poll_AddHandler(SN74HC595_Poll);
 }
 
 extern void SN74HC595_Poll(void) {

@@ -1,7 +1,7 @@
 #include "stm32f10x.h"
 
 #include "cd4051b.h"
-#include "timer.h"
+#include "delay.h"
 
 static const uint8_t    Map[] = { 2, 6, 5, 4, 7, 0, 3, 1 };
 static int16_t          State[CD4051B_NumChannels];
@@ -66,6 +66,12 @@ static void InitADC(void) {
 }
 
 extern void CD4051B_Init() {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+  
+  Delay_Init();
+
   CurrChannel = 0;
   InitState();
   InitGPIO();
@@ -79,7 +85,7 @@ extern void CD4051B_Poll(void) {
   GPIO_WriteBit(CD4051B_A_PORT, CD4051B_A_PIN, A);
   GPIO_WriteBit(CD4051B_B_PORT, CD4051B_B_PIN, B);
   GPIO_WriteBit(CD4051B_C_PORT, CD4051B_C_PIN, C);
-  Timer_Delay(52); // 722 ns
+  Delay_Cycles(52); // 722 ns
   ADC_SoftwareStartConvCmd(CD4051B_ADC, ENABLE);
   while (ADC_GetSoftwareStartConvStatus(CD4051B_ADC));
   State[Map[CurrChannel]] = ADC_GetConversionValue(CD4051B_ADC);

@@ -2,6 +2,7 @@
 // Module:        CD4051B
 // Description:   Driver for CD4051B 8-channel analog multiplexer.
 // Resources:     PA6, PC8, PC9, PD2
+// Dependencies:  Delay
 
 #ifndef __CD4051B_H
 #define __CD4051B_H

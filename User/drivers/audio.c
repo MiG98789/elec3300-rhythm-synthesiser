@@ -19,7 +19,7 @@ static void initDMA(const uint16_t* buffer, int bufferSize) {
   
   RCC_AHBPeriphClockCmd(RCC_AHBPeriph_DMA2, ENABLE);
     
-  DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t) &DAC->DHR12R1;
+  DMA_InitStruct.DMA_PeripheralBaseAddr = (uint32_t) &DAC->DHR12L1;
   DMA_InitStruct.DMA_MemoryBaseAddr = (uint32_t) buffer;
   DMA_InitStruct.DMA_DIR = DMA_DIR_PeripheralDST;
   DMA_InitStruct.DMA_BufferSize = bufferSize;
@@ -52,7 +52,7 @@ static void initDAC(void) {
   DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
   DAC_Init(DAC_Channel_1, &DAC_InitStruct);
 
-  DAC_SetChannel1Data(DAC_Align_12b_L, Audio_BIAS);
+  DAC_SetChannel1Data(DAC_Align_12b_L, Audio_Bias);
   DAC_DMACmd(DAC_Channel_1, ENABLE);
   DAC_Cmd(DAC_Channel_1, ENABLE);
 }
@@ -73,6 +73,10 @@ static void initTIM(void) {
 }
 
 void Audio_Init(const uint16_t* buffer, int bufferSize) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+
   initGPIO();
   initDMA(buffer, bufferSize);
   initDAC();

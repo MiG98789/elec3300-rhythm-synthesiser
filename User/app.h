@@ -6,21 +6,36 @@
 #ifndef __APP_H
 #define __APP_H
 
+#include <stdint.h>
+
 typedef enum {
-  App_Mode_PatternSelect,
-  App_Mode_PatternEdit,
-  App_Mode_PatternPlay
+  App_Mode_EditPattern,
+  App_Mode_PlayPattern
 } App_Mode;
+
+typedef enum {
+  App_Status_Stopped,
+  App_Status_Started
+} App_Status;
 
 void App_Init(void);
 
 void App_SetCurrMode(App_Mode mode);
-int App_CurrMode(void);
+void App_ToggleCurrMode(void);
+App_Mode App_CurrMode(void);
+
+void App_SetCurrStatus(App_Status status);
+void App_ToggleCurrStatus(void);
+App_Status App_CurrStatus(void);
 
 void App_SetCurrPattern(int pattern);
 int App_CurrPattern(void);
 
 void App_SetCurrInstrument(int instrument);
 int App_CurrInstrument(void);
+
+void App_SetCurrStep(int step);
+void App_RotateCurrStep(void);
+uint16_t App_CurrStep(void);
 
 #endif

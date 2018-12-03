@@ -530,6 +530,11 @@
           <GroupName>DRIVERS</GroupName>
           <Files>
             <File>
+              <FileName>ascii.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\ascii.h</FilePath>
+            </File>
+            <File>
               <FileName>audio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\drivers\audio.c</FilePath>
@@ -548,6 +553,16 @@
               <FileName>cd4051b.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\drivers\cd4051b.h</FilePath>
+            </File>
+            <File>
+              <FileName>delay.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\delay.c</FilePath>
+            </File>
+            <File>
+              <FileName>delay.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\delay.h</FilePath>
             </File>
             <File>
               <FileName>instrument.c</FileName>
@@ -590,6 +605,16 @@
               <FilePath>..\..\User\drivers\k3.h</FilePath>
             </File>
             <File>
+              <FileName>lcd.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\lcd.c</FilePath>
+            </File>
+            <File>
+              <FileName>lcd.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\lcd.h</FilePath>
+            </File>
+            <File>
               <FileName>mastervolumepot.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\drivers\mastervolumepot.c</FilePath>
@@ -598,6 +623,16 @@
               <FileName>mastervolumepot.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\drivers\mastervolumepot.h</FilePath>
+            </File>
+            <File>
+              <FileName>poll.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\drivers\poll.c</FilePath>
+            </File>
+            <File>
+              <FileName>poll.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\drivers\poll.h</FilePath>
             </File>
             <File>
               <FileName>sn74hc166.c</FileName>
@@ -628,16 +663,6 @@
               <FileName>tempoencoder.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\drivers\tempoencoder.h</FilePath>
-            </File>
-            <File>
-              <FileName>timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\drivers\timer.c</FilePath>
-            </File>
-            <File>
-              <FileName>timer.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\drivers\timer.h</FilePath>
             </File>
             <File>
               <FileName>tsc2046.c</FileName>
@@ -683,6 +708,16 @@
               <FileName>player.h</FileName>
               <FileType>5</FileType>
               <FilePath>..\..\User\player.h</FilePath>
+            </File>
+            <File>
+              <FileName>screen.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\User\screen.c</FilePath>
+            </File>
+            <File>
+              <FileName>screen.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\..\User\screen.h</FilePath>
             </File>
             <File>
               <FileName>tempo.c</FileName>
