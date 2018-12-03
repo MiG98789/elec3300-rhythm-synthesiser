@@ -2,6 +2,7 @@
 
 #include "drivers/lcd.h"
 #include "drivers/poll.h"
+#include "drivers/tempoencoder.h"
 #include "drivers/tsc2046.h"
 
 #include "app.h"
@@ -11,7 +12,17 @@ static void OnTouch(uint8_t x, uint8_t y) {
   char output[9] = "";
   sprintf(output, "(%d,%d)", x, y);
 
-  LCD_DrawString(0x78, 0x50, "         ");
+  LCD_DrawString(0x78, 0x60, "         ");
+  LCD_DrawString(0x78, 0x60, output);
+}
+
+static void OnTempoChange(int tempoBPM) {
+  char output[3] = "";
+  if (tempoBPM < 100)
+    sprintf(output, "%d ", tempoBPM);
+  else
+    sprintf(output, "%d", tempoBPM);
+  
   LCD_DrawString(0x78, 0x50, output);
 }
 
@@ -29,10 +40,16 @@ extern void Screen_Init(void) {
   LCD_DrawString(0x00, 0x20, "Pattern:");
   LCD_DrawString(0x00, 0x30, "Instrument:");
   LCD_DrawString(0x00, 0x40, "Step:");
-  LCD_DrawString(0x00, 0x50, "Touch (X,Y):");
-  
+  LCD_DrawString(0x00, 0x50, "Tempo:");
+  LCD_DrawString(0x00, 0x60, "Touch (X,Y):");
+
+  LCD_DrawString(0x78, 0x50, "120");
+  LCD_DrawString(0x78, 0x60, "(0,0)");
+
   Poll_AddHandler(Screen_Debug);
+  TempoEncoder_SetChangeHandler(OnTempoChange);
   TSC2046_SetTouchHandler(OnTouch);
+  
 }
 
 extern void Screen_UpdateCurrMode(void) {

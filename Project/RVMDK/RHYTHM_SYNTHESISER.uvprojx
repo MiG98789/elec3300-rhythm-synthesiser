@@ -720,16 +720,6 @@
               <FilePath>..\..\User\screen.h</FilePath>
             </File>
             <File>
-              <FileName>tempo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\User\tempo.c</FilePath>
-            </File>
-            <File>
-              <FileName>tempo.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\User\tempo.h</FilePath>
-            </File>
-            <File>
               <FileName>volume.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\User\volume.c</FilePath>
