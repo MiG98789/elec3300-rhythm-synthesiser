@@ -42,6 +42,19 @@ static void ShiftOut(uint16_t data) {
   PulseRCLK();
 }
 
+static void OnPoll(void) {
+  uint16_t output = State;
+  output |= FlashEnable & Flash;
+  output ^= Blink;
+  ShiftOut(output);
+  
+  Blink = 0x0;
+  if (++FlashCounter == FlashPeriod) {
+    FlashCounter = 0;
+    FlashEnable = ~FlashEnable;
+  }
+}
+
 static void InitGPIO(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
   
@@ -72,40 +85,29 @@ extern void SN74HC595_Init(void) {
   
   Delay_Init();
 
-  State = 0x0;
-  Flash = 0x0;
-  Blink = 0x0;
-  
   InitGPIO();
   
   ShiftOut(0x0);
   
-  Poll_AddHandler(SN74HC595_Poll);
+  Poll_AddHandler(OnPoll);
 }
 
-extern void SN74HC595_Poll(void) {
-  uint16_t output = State;
-  output |= FlashEnable & Flash;
-  output ^= Blink;
-  ShiftOut(output);
-  
+extern void SN74HC595_Clear(void) {
+  State = 0x0;
+  Flash = 0x0;
   Blink = 0x0;
-  if (++FlashCounter == FlashPeriod) {
-    FlashCounter = 0;
-    FlashEnable = ~FlashEnable;
-  }
 }
 
-void SN74HC595_SetState(uint16_t state) {
+extern void SN74HC595_SetState(uint16_t state) {
   State = state;
 }
 
-void SN74HC595_SetFlash(uint16_t flash) {
+extern void SN74HC595_SetFlash(uint16_t flash) {
   Flash = flash;
   FlashCounter = 0;
   FlashEnable = 0xFFFF;
 }
 
-void SN74HC595_SetBlink(uint16_t blink) {
+extern void SN74HC595_SetBlink(uint16_t blink) {
   Blink = blink;
 }

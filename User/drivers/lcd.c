@@ -581,15 +581,15 @@ void LCD_DrawCircle ( uint16_t usC, uint16_t usP, uint16_t R, uint16_t usColor)
 
 void LCD_DrawHex (uint16_t usC, uint16_t usP, uint32_t x)
 {
-  char str[11];
-  sprintf(str, "0x%x", x);
+  char str[32];
+  sprintf(str, "0x%x        ", x);
   LCD_DrawString(usC, usP, str);
 }
 
 void LCD_DrawDec (uint16_t usC, uint16_t usP, uint32_t x)
 {
-  char str[11];
-  sprintf(str, "%d", x);
+  char str[32];
+  sprintf(str, "%d        ", x);
   LCD_DrawString(usC, usP, str);
 }
 

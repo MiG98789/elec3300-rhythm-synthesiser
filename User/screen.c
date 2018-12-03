@@ -22,10 +22,14 @@ extern void Screen_Init(void) {
 }
 
 extern void Screen_UpdateCurrMode(void) {
-  if (App_CurrMode() == App_Mode_EditPattern)
-    LCD_DrawString(0x78, 0x00, "Edit Pattern");
-  else
-    LCD_DrawString(0x78, 0x00, "Play Pattern");
+  switch (App_CurrMode()) {
+    case App_Mode_Edit:
+      LCD_DrawString(0x78, 0x00, "Edit");
+      break;
+    case App_Mode_Play:
+      LCD_DrawString(0x78, 0x00, "Play");
+      break;
+  }
 }
 
 extern void Screen_UpdateCurrStatus(void) {
@@ -44,7 +48,7 @@ extern void Screen_UpdateCurrInstrument(void) {
 }
 
 extern void Screen_UpdateCurrStep(void) {
-  LCD_DrawDec(0x78, 0x40, App_CurrStep());
+  LCD_DrawHex(0x78, 0x40, App_CurrStep());
 }
 
 extern void Screen_Debug(void) {
