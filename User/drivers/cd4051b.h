@@ -33,7 +33,6 @@
 #define CD4051B_MaxValue    0xFFF
 
 void CD4051B_Init(void);
-void CD4051B_Poll(void);
 int16_t CD4051B_Read(int i);
 
 #endif
