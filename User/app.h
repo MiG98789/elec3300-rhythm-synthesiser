@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 typedef enum {
-  App_Mode_EditPattern,
-  App_Mode_PlayPattern
+  App_Mode_Edit,
+  App_Mode_Play
 } App_Mode;
 
 typedef enum {
@@ -20,11 +20,11 @@ typedef enum {
 
 void App_Init(void);
 
-void App_SetCurrMode(App_Mode mode);
+// void App_SetCurrMode(App_Mode mode);
 void App_ToggleCurrMode(void);
 App_Mode App_CurrMode(void);
 
-void App_SetCurrStatus(App_Status status);
+// void App_SetCurrStatus(App_Status status);
 void App_ToggleCurrStatus(void);
 App_Status App_CurrStatus(void);
 
@@ -34,7 +34,6 @@ int App_CurrPattern(void);
 void App_SetCurrInstrument(int instrument);
 int App_CurrInstrument(void);
 
-void App_SetCurrStep(int step);
 void App_RotateCurrStep(void);
 uint16_t App_CurrStep(void);
 

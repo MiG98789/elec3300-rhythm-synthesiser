@@ -1,7 +1,8 @@
 #include "stm32f10x.h"
 
-#include "tsc2046.h"
 #include "delay.h"
+#include "poll.h"
+#include "tsc2046.h"
 
 static void (*TouchHandler)(uint8_t x, uint8_t y) = 0;
 
@@ -16,13 +17,13 @@ static uint8_t ReadTouchscreen(uint8_t controlByte) {
        Control bit def | Value | Function
      ------------------+-------+-----------------------
        Start           |   1   | Must initialise as 1
-       Addressing (A2) |  1/0  | Measure X/Y
-       Addressing (A1) |   0   | Measure X/Y
-       Addressing (A0) |   1   | Measure X/Y
+       Addressing (A2) |1/0/0/1| Measure X/Y/Z1/Z2
+       Addressing (A1) |0/0/1/0| Measure X/Y/Z1/Z2
+       Addressing (A0) |1/1/1/0| Measure X/Y
        Mode            |   1   | 8-bit resolution
        SER/DFR         |   0   | Differential mode
        Power-Down (PD1)|   0   | 
-       Power-Down (PD0)|   0   | 
+       Power-Down (PD0)|   0   |
   */
   uint8_t i = 0;
   uint8_t coord = 0;
@@ -47,6 +48,21 @@ static uint8_t ReadTouchscreen(uint8_t controlByte) {
   Delay_Cycles(28);
 
   return coord;
+}
+
+static void OnPoll(void) {
+  static uint8_t x = 0;
+  static uint8_t y = 0;
+
+  x = ReadTouchscreen(0xd8);
+  y = ReadTouchscreen(0x98);
+
+  if (x == 0 || y == 255) {
+    x = 0;
+    y = 255;
+  }
+
+  if (TouchHandler) TouchHandler(x, y);
 }
 
 static void InitGPIO(void) {
@@ -84,24 +100,6 @@ static void InitGPIO(void) {
 	GPIO_InitStruct.GPIO_Mode = GPIO_Mode_IN_FLOATING;
 	GPIO_InitStruct.GPIO_Speed = GPIO_Speed_50MHz;
 	GPIO_Init(TSC2046_PENIRQ_PORT, &GPIO_InitStruct);
-  GPIO_EXTILineConfig(TSC2046_PENIRQ_PortSource, TSC2046_PENIRQ_PinSource);
-}
-
-static void InitEXTI(void) {
-  EXTI_InitTypeDef EXTI_InitStruct;
-  NVIC_InitTypeDef NVIC_InitStruct;
-
-  EXTI_InitStruct.EXTI_Line = EXTI_Line4;
-  EXTI_InitStruct.EXTI_Mode = EXTI_Mode_Interrupt;
-  EXTI_InitStruct.EXTI_Trigger = EXTI_Trigger_Falling;
-  EXTI_InitStruct.EXTI_LineCmd = ENABLE;
-  EXTI_Init(&EXTI_InitStruct);
-
-  NVIC_InitStruct.NVIC_IRQChannel = EXTI4_IRQn;
-  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStruct);
 }
 
 extern void TSC2046_Init(void) {
@@ -112,22 +110,10 @@ extern void TSC2046_Init(void) {
   Delay_Init();
 
   InitGPIO();
-  InitEXTI();
+
+  Poll_AddHandler(OnPoll);
 }
 
 extern void TSC2046_SetTouchHandler(void handler(uint8_t, uint8_t)) {
   TouchHandler = handler;
-}
-
-extern void EXTI4_IRQHandler(void) {
-  uint8_t x = 0;
-  uint8_t y = 0;
-
-  if (EXTI_GetITStatus(EXTI_Line4)) {
-    x = ReadTouchscreen(0xd8);
-    y = ReadTouchscreen(0x98);
-    if (TouchHandler) TouchHandler(x, y);
-
-    EXTI_ClearITPendingBit(EXTI_Line4);
-  }
 }

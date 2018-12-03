@@ -95,12 +95,15 @@ void                     LCD_Clear                   ( uint16_t usC, uint16_t us
 void                     LCD_DrawDot           			 ( uint16_t usC, uint16_t usP, uint16_t usColor );
 uint16_t                 LCD_GetPointPixel           ( uint16_t usC , uint16_t usP );
 void                     LCD_DrawLine                ( uint16_t usC1, uint16_t usP1, uint16_t usC2, uint16_t usP2, uint16_t usColor );
-void                     LCD_DrawChar             	 ( uint16_t usC, uint16_t usP, const char cChar);
-void                     LCD_DrawString           	 ( uint16_t usC, uint16_t usP, const char * pStr);
+void                     LCD_DrawChar             	 ( uint16_t usC, uint16_t usP, const char cChar );
+void                     LCD_DrawColorChar         	 ( uint16_t usC, uint16_t usP, const char cChar, uint16_t fontColor, uint16_t backgroundColor);
+void                     LCD_DrawString           	 ( uint16_t usC, uint16_t usP, const char * pStr );
+void                     LCD_DrawColorString       	 ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t fontColor, uint16_t backgroundColor);
 void 										 LCD_DrawCircle							 ( uint16_t usC, uint16_t usP, uint16_t R, uint16_t usColor);
 void                     LCD_DrawHex                 ( uint16_t usC, uint16_t usP, uint32_t x );
 void                     LCD_DrawDec                 ( uint16_t usC, uint16_t usP, uint32_t x );
 void                     LCD_DrawBin                 ( uint16_t usC, uint16_t usP, uint16_t x );
+void                     LCD_DrawButton              ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t fontColor, uint16_t backgroundColor );
 
 #endif 
 

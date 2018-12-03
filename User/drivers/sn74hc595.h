@@ -20,7 +20,8 @@
 #define SN74HC595_SER_PIN       GPIO_Pin_12
 
 void SN74HC595_Init(void);
-void SN74HC595_Poll(void);
+
+void SN74HC595_Clear(void);
 
 // Continuous
 void SN74HC595_SetState(uint16_t state);

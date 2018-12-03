@@ -16,15 +16,44 @@
 #include "screen.h"
 #include "volume.h"
 
-static App_Mode CurrMode;
-static App_Status CurrStatus;
-static int CurrPattern;
-static int CurrInstrument;
-static int CurrStep;
+static App_Mode CurrMode = App_Mode_Play;
+static App_Status CurrStatus = App_Status_Started;
+static int CurrPattern = 0;
+static int CurrInstrument = 0;
+static uint16_t CurrStep = 0x1;
+
+static int MsbIndex(uint16_t x) {
+  int index = 15;
+  while (x >>= 1)
+    --index;
+  return index;
+}
 
 static void OnPatternPanelPress(uint16_t toggle) {
-  Pattern_ToggleCurrPattern(toggle);
-  SN74HC595_SetState(Pattern_CurrPattern());
+  switch (CurrMode) {
+    case App_Mode_Edit:
+      switch (CurrStatus) {
+        case App_Status_Started:
+          Pattern_ToggleCurrPattern(toggle);
+          SN74HC595_SetState(Pattern_CurrPattern());
+          break;
+        case App_Status_Stopped:
+          App_SetCurrPattern(MsbIndex(toggle));
+          break;
+      }
+      break;
+    case App_Mode_Play:
+      switch (CurrStatus) {
+        case App_Status_Started:
+          break;
+        case App_Status_Stopped:
+          break;
+      }
+      break;
+  }
+  if (CurrMode == App_Mode_Edit) {
+    
+  }
 }
 
 extern void App_Init(void) {
@@ -46,43 +75,48 @@ extern void App_Init(void) {
   Screen_Init();
   Volume_Init();
 
+  App_ToggleCurrMode();
+  App_ToggleCurrStatus();
   App_SetCurrPattern(0);
   App_SetCurrInstrument(0);
-  App_SetCurrMode(App_Mode_EditPattern);
-  App_SetCurrStatus(App_Status_Stopped);
-  App_SetCurrStep(0);
   
   K1_SetClickHandler(App_ToggleCurrMode);
   K2_SetClickHandler(App_ToggleCurrStatus);
   SN74HC166_SetRisingHandler(OnPatternPanelPress);
 }
 
-extern void App_SetCurrMode(App_Mode mode) {
-  CurrMode = mode;
-  Screen_UpdateCurrMode();
-}
-
 extern void App_ToggleCurrMode(void) {
-  if (CurrMode == App_Mode_EditPattern)
-    App_SetCurrMode(App_Mode_PlayPattern);
-  else
-    App_SetCurrMode(App_Mode_EditPattern);
+  SN74HC595_Clear();
+  switch (CurrMode) {
+    case App_Mode_Edit:
+      CurrMode = App_Mode_Play;
+      break;
+    case App_Mode_Play:
+      CurrMode = App_Mode_Edit;
+      break;
+  }
+  Screen_UpdateCurrMode();
 }
 
 extern App_Mode App_CurrMode(void) {
   return CurrMode;
 }
 
-extern void App_SetCurrStatus(App_Status status) {
-  CurrStatus = status;
-  Screen_UpdateCurrStatus();
-}
-
 extern void App_ToggleCurrStatus(void) {
-  if (CurrStatus == App_Status_Stopped)
-    App_SetCurrStatus(App_Status_Started);
-  else
-    App_SetCurrStatus(App_Status_Stopped);
+  SN74HC595_Clear();
+  switch (CurrStatus) {
+    case App_Status_Stopped:
+      CurrStatus = App_Status_Started;
+      SN74HC595_SetState(Pattern_CurrPattern());
+      Player_Stop();
+      break;
+    case App_Status_Started:
+      CurrStatus = App_Status_Stopped;
+      SN74HC595_SetFlash(0x8000 >> CurrPattern);
+      Player_Start();
+      break;
+  }
+  Screen_UpdateCurrStatus();
 }
 
 extern App_Status App_CurrStatus(void) {
@@ -92,6 +126,7 @@ extern App_Status App_CurrStatus(void) {
 extern void App_SetCurrPattern(int pattern) {
   CurrPattern = pattern;
   Screen_UpdateCurrPattern();
+  SN74HC595_SetFlash(0x8000 >> pattern);
 }
 
 extern int App_CurrPattern(void) {
@@ -107,13 +142,11 @@ extern int App_CurrInstrument(void) {
   return CurrInstrument;
 }
 
-extern void App_SetCurrStep(int step) {
-  CurrStep = step;
-  Screen_UpdateCurrStep();
-}
-
 extern void App_RotateCurrStep(void) {
-  App_SetCurrStep((CurrStep >> 1) | (CurrStep << 15));
+  CurrStep = (CurrStep >> 1) | (CurrStep << 15);
+  Screen_UpdateCurrStep();
+  if (CurrStatus == App_Status_Started)
+    SN74HC595_SetBlink(CurrStep);
 }
 
 extern uint16_t App_CurrStep(void) {

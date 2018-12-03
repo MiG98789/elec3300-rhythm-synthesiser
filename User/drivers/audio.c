@@ -2,7 +2,7 @@
 
 #include "audio.h"
 
-static void initGPIO(void) {
+static void InitGPIO(void) {
   GPIO_InitTypeDef GPIO_InitStruct;
   
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA, ENABLE);
@@ -13,7 +13,7 @@ static void initGPIO(void) {
   GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
-static void initDMA(const uint16_t* buffer, int bufferSize) {
+static void InitDMA(const uint16_t* buffer, int bufferSize) {
   DMA_InitTypeDef DMA_InitStruct;
   NVIC_InitTypeDef NVIC_InitStruct;
   
@@ -28,21 +28,20 @@ static void initDMA(const uint16_t* buffer, int bufferSize) {
   DMA_InitStruct.DMA_PeripheralDataSize = DMA_PeripheralDataSize_Word;
   DMA_InitStruct.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;
   DMA_InitStruct.DMA_Mode = DMA_Mode_Circular;
-  DMA_InitStruct.DMA_Priority = DMA_Priority_High;
+  DMA_InitStruct.DMA_Priority = DMA_Priority_Low;
   DMA_InitStruct.DMA_M2M = DMA_M2M_Disable;
   DMA_Init(DMA2_Channel3, &DMA_InitStruct);
-  
-  NVIC_InitStruct.NVIC_IRQChannel = DMA2_Channel3_IRQn;
-  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 0;
-  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 0;
-  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
-  NVIC_Init(&NVIC_InitStruct);
-
   DMA_ITConfig(DMA2_Channel3, DMA_IT_HT | DMA_IT_TC, ENABLE);
   DMA_Cmd(DMA2_Channel3, ENABLE);
+  
+  NVIC_InitStruct.NVIC_IRQChannel = DMA2_Channel3_IRQn;
+  NVIC_InitStruct.NVIC_IRQChannelPreemptionPriority = 1;
+  NVIC_InitStruct.NVIC_IRQChannelSubPriority = 1;
+  NVIC_InitStruct.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStruct);
 }
 
-static void initDAC(void) {
+static void InitDAC(void) {
   DAC_InitTypeDef DAC_InitStruct;
   
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_DAC, ENABLE);
@@ -52,12 +51,12 @@ static void initDAC(void) {
   DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
   DAC_Init(DAC_Channel_1, &DAC_InitStruct);
 
-  DAC_SetChannel1Data(DAC_Align_12b_L, Audio_Bias);
   DAC_DMACmd(DAC_Channel_1, ENABLE);
   DAC_Cmd(DAC_Channel_1, ENABLE);
+  DAC_SetChannel1Data(DAC_Align_12b_L, Audio_Bias);
 }
 
-static void initTIM(void) {
+static void InitTIM(void) {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
 
   RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM6, ENABLE);
@@ -77,8 +76,8 @@ void Audio_Init(const uint16_t* buffer, int bufferSize) {
   if (init) return;
   else init = 1;
 
-  initGPIO();
-  initDMA(buffer, bufferSize);
-  initDAC();
-  initTIM();
+  InitGPIO();
+  InitDMA(buffer, bufferSize);
+  InitDAC();
+  InitTIM();
 }

@@ -531,6 +531,37 @@ void LCD_DrawChar ( uint16_t usC, uint16_t usP, const char cChar )
 }
 
 
+void LCD_DrawColorChar ( uint16_t usC, uint16_t usP, const char cChar, uint16_t fontColor, uint16_t backgroundColor )
+{
+	uint8_t ucTemp, ucRelativePositon, ucPage, ucColumn;
+
+	
+	ucRelativePositon = cChar - ' ';
+	
+	LCD_OpenWindow ( usC, usP, WIDTH_EN_CHAR, HEIGHT_EN_CHAR );
+	
+	LCD_Write_Cmd ( CMD_SetPixel );	
+	
+	for ( ucPage = 0; ucPage < HEIGHT_EN_CHAR; ucPage ++ )
+	{
+		ucTemp = ucAscii_1608 [ ucRelativePositon ] [ ucPage ];
+		
+		for ( ucColumn = 0; ucColumn < WIDTH_EN_CHAR; ucColumn ++ )
+		{
+			if ( ucTemp & 0x01 )
+				LCD_Write_Data ( fontColor );
+			
+			else
+				LCD_Write_Data (  backgroundColor );								
+			
+			ucTemp >>= 1;		
+			
+		}
+		
+	}
+	
+}
+
 
 
 void LCD_DrawString ( uint16_t usC, uint16_t usP, const char * pStr )
@@ -560,36 +591,55 @@ void LCD_DrawString ( uint16_t usC, uint16_t usP, const char * pStr )
 }
 
 
-//Task 2
+void LCD_DrawColorString ( uint16_t usC, uint16_t usP, const char * pStr, uint16_t fontColor, uint16_t backgroundColor )
+{
+	while ( * pStr != '\0' )
+	{
+		if ( ( usC - LCD_DispWindow_Start_COLUMN + WIDTH_EN_CHAR ) > LCD_DispWindow_COLUMN )
+		{
+			usC = LCD_DispWindow_Start_COLUMN;
+			usP += HEIGHT_EN_CHAR;
+		}
+		
+		if ( ( usP - LCD_DispWindow_Start_PAGE + HEIGHT_EN_CHAR ) > LCD_DispWindow_PAGE )
+		{
+			usC = LCD_DispWindow_Start_COLUMN;
+			usP = LCD_DispWindow_Start_PAGE;
+		}
+		
+		LCD_DrawColorChar ( usC, usP, * pStr, fontColor, backgroundColor );
+		
+		pStr ++;
+		
+		usC += WIDTH_EN_CHAR;
+		
+	}
+	
+}
+
+
 void LCD_DrawDot(uint16_t usCOLUMN, uint16_t usPAGE, uint16_t usColor)	
 {	
-	/*
-	 *  Task 2 – Implement the LCD_DrawDot to turn on a particular dot on the LCD.
-	 */
   LCD_OpenWindow(usCOLUMN, usPAGE, 1, 1);
   LCD_FillColor(1, usColor);
 }
 
-//Task 3
 void LCD_DrawCircle ( uint16_t usC, uint16_t usP, uint16_t R, uint16_t usColor)
 {	
-	/*
-	 *  Task 3 – Implement LCD_DrawCircle by using LCD_DrawDot
-	 */
 	
 }
 
 void LCD_DrawHex (uint16_t usC, uint16_t usP, uint32_t x)
 {
-  char str[11];
-  sprintf(str, "0x%x", x);
+  char str[32];
+  sprintf(str, "0x%x        ", x);
   LCD_DrawString(usC, usP, str);
 }
 
 void LCD_DrawDec (uint16_t usC, uint16_t usP, uint32_t x)
 {
-  char str[11];
-  sprintf(str, "%d", x);
+  char str[32];
+  sprintf(str, "%d        ", x);
   LCD_DrawString(usC, usP, str);
 }
 
@@ -601,4 +651,27 @@ void LCD_DrawBin (uint16_t usC, uint16_t usP, uint16_t x)
   for (i = 0, mask = 1 << 15; i < 16; ++i, mask >>= 1)
     str[i] = x & mask ? '1' : '0';
   LCD_DrawString(usC, usP, str);
+}
+
+void LCD_DrawButton (uint16_t usC, uint16_t usP, const char * pStr, uint16_t fontColor, uint16_t backgroundColor) {
+  static const uint16_t buttonWidth = 0x78;
+  static const uint16_t buttonHeight = 0x30;
+  uint8_t charCount = 0;
+  uint8_t charIndex = 0;
+  int padding = 0;
+
+  LCD_OpenWindow(usC, usP, buttonWidth, buttonHeight);
+  LCD_FillColor(buttonWidth*buttonHeight, backgroundColor);
+
+  for (charIndex = 0; pStr[charIndex]; charIndex++) {
+    if (pStr[charIndex] != '\n')
+      charCount++;
+  }
+  padding = 0x08*(15 - charCount)/2;
+  LCD_DrawColorString(usC + padding, usP + buttonHeight/2 - 0x10/2, pStr, fontColor, backgroundColor);
+
+  LCD_DrawLine(usC, usP, usC + buttonWidth, usP, BLACK);
+  LCD_DrawLine(usC, usP, usC, usP + buttonHeight, BLACK);
+  LCD_DrawLine(usC + buttonWidth, usP, usC + buttonWidth, usP + buttonHeight, BLACK);
+  LCD_DrawLine(usC, usP + buttonHeight, usC + buttonWidth, usP + buttonHeight, BLACK);
 }
