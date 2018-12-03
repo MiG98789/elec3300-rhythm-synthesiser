@@ -180,6 +180,7 @@ extern void App_RotateCurrStep(void) {
     CurrPattern = NextPattern;
     SN74HC595_SetFlash(0);
     SN74HC595_SetState(0x8000 >> CurrPattern);
+    Screen_UpdateCurrPattern();
   }
 }
 
