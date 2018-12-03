@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define Instrument_Count 8
+#define Instrument_NumInstruments   8
 #define Instrument_NoData
 
 void Instrument_Init(void);

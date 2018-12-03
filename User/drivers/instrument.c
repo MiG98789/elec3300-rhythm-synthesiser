@@ -28,8 +28,8 @@ static const int16_t Data_08[] = { -194, 315, -416, 546, -744, 2200, -4993, 3539
 static const int16_t* Data[] = { Data_01, Data_02, Data_03, Data_04, Data_05, Data_06, Data_07, Data_08 };
 static const uint16_t Size[] = { 12399, 7848, 19040, 1094, 12492, 15372, 25263, 4783 };
 #else 
-static const int16_t* Data[Instrument_Count] = { 0 };
-static const uint16_t Size[Instrument_Count] = { 0 };
+static const int16_t* Data[Instrument_NumInstruments] = { 0 };
+static const uint16_t Size[Instrument_NumInstruments] = { 0 };
 #endif
 static const char* Name[] = {
   "Kick",
@@ -43,6 +43,9 @@ static const char* Name[] = {
 };
 
 extern void Instrument_Init(void) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
 }
 
 extern const int16_t* Instrument_Data(int i) {

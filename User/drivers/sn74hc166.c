@@ -1,19 +1,20 @@
 #include "stm32f10x.h"
 
 #include "sn74hc166.h"
-#include "timer.h"
+#include "delay.h"
+#include "poll.h"
 
-static const int8_t Map[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+static const int8_t Map[] = { 4, 5, 6, 7, 3, 2, 1, 0, 12, 13, 14, 15, 11, 10, 9, 8 };
 static void (*RisingHandler)(uint16_t rising) = 0;
 
 static void WriteSHLD(BitAction shld) {
   GPIO_WriteBit(SN74HC166_SHLD_PORT, SN74HC166_SHLD_PIN, shld);
-  Timer_Delay(13); // 181ns
+  Delay_Cycles(13); // 181ns
 }
 
 static void PulseCLK(void) {
   GPIO_WriteBit(SN74HC166_CLK_PORT, SN74HC166_CLK_PIN, Bit_RESET);
-  Timer_Delay(7); // 97ns
+  Delay_Cycles(7); // 97ns
   GPIO_WriteBit(SN74HC166_CLK_PORT, SN74HC166_CLK_PIN, Bit_SET);
 }
 
@@ -22,7 +23,7 @@ static int ReadQH(void) {
 }
 
 static uint16_t ShiftIn(void) {
-  uint16_t data;
+  uint16_t data = 0x0;
   int i;
   WriteSHLD(Bit_RESET);                   // Switch to LD mode
   PulseCLK();                             // Load data into shift register
@@ -58,14 +59,21 @@ static void InitGPIO(void) {
 }
 
 extern void SN74HC166_Init(void) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+
+  Delay_Init();
+  Poll_Init();
+
   InitGPIO();
+
+  Poll_AddHandler(SN74HC166_Poll);
 }
 
 extern void SN74HC166_Poll(void) {
   static uint16_t prevState = 0x0;
   uint16_t currState = ShiftIn();
-  
-  // Detect 0 to 1 transition
   uint16_t rising = currState & (currState ^ prevState);
   if (RisingHandler && rising) RisingHandler(rising);
   prevState = currState;

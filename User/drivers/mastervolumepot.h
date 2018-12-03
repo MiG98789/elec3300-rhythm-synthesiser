@@ -1,5 +1,6 @@
 // File:          mastervolumepot.h
 // Module:        MasterVolumePot
+// Dependencies:  Poll
 // Description:   Driver for master volume potentiometer
 // Resources:     PA7
 

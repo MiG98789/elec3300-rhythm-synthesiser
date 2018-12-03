@@ -1,6 +1,7 @@
 #include "stm32f10x.h"
 
 #include "mastervolumepot.h"
+#include "poll.h"
 
 static int16_t State;
 
@@ -39,9 +40,18 @@ static void InitADC(void) {
 }
 
 extern void MasterVolumePot_Init(void) {
+  static int init = 0;
+  if (init) return;
+  else init = 1;
+
+  Poll_Init();
+
   State = MasterVolumePot_MaxValue;
+  
   InitGPIO();
   InitADC();
+
+  Poll_AddHandler(MasterVolumePot_Poll);
 }
 
 extern void MasterVolumePot_Poll(void) {
