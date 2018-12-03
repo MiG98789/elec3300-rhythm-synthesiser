@@ -126,9 +126,11 @@ extern App_Status App_CurrStatus(void) {
 }
 
 extern void App_ClearCurrPattern(void) {
-  Pattern_ClearCurrPattern();
-  Screen_UpdateCurrPattern();
-  SN74HC595_SetState(0);
+  if (CurrMode == App_Mode_Edit && CurrStatus == App_Status_Started) {
+    Pattern_ClearCurrPattern();
+    Screen_UpdateCurrPattern();
+    SN74HC595_SetState(0);
+  }
 }
 
 extern void App_SetCurrPattern(int pattern) {
