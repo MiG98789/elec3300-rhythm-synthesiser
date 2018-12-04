@@ -101,7 +101,7 @@ extern void Screen_Init(void) {
   LCD_DrawString(0x00, 0x10, "Status:");
   LCD_DrawString(0x00, 0x20, "Pattern:");
   LCD_DrawString(0x00, 0x30, "Instrument:");
-  LCD_DrawString(0x00, 0x40, "Step:");
+  // LCD_DrawString(0x00, 0x40, "Step:");
   LCD_DrawString(0x00, 0x50, "Tempo:");
   LCD_DrawString(0x00, 0x60, "Touch (X,Y):");
   LCD_DrawString(0x00, 0x70, "Master vol:");
@@ -144,5 +144,5 @@ extern void Screen_UpdateCurrInstrument(void) {
 }
 
 extern void Screen_UpdateCurrStep(void) {
-  LCD_DrawHex(0x78, 0x40, App_CurrStep());
+  // LCD_DrawHex(0x78, 0x40, App_CurrStep());
 }

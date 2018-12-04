@@ -81,13 +81,19 @@ static int32_t ReadData(int i) {
 static void EnqueueInstruments(void) {
   const uint16_t currPattern = App_CurrPattern();
   const uint16_t nextStep = App_NextStep();
-  int i, j;
+  int oh = -2;
+  int i, j, k;
   for (i = 0; i < Instrument_NumInstruments; ++i) {
     if (Pattern_Data(currPattern)[i] & nextStep) {
+      if (i == 6 || i == 7)
+        for (k = 0; k < Player_NumTracks; ++k)
+          if (Index[k] == 6 && k != oh)
+            Size[k] = 0;
       j = Pop();
       Data[j] = Instrument_Data(i);
       Size[j] = Instrument_Size(i);
       Index[j] = i;
+      if (i == 6) oh = j;
     }
   }
 }

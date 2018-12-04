@@ -66,12 +66,13 @@ extern void App_Init(void) {
   else init = 1;
   
   LCD_INIT();
+  SN74HC595_Init();
+  RGBLED_Init();
+
   K1_Init();
   K2_Init();
   K3_Init();
-  RGBLED_Init();
   SN74HC166_Init();
-  SN74HC595_Init();
   TempoEncoder_Init();
   TSC2046_Init();
 
@@ -173,7 +174,6 @@ extern void App_RenderStep(void) {
 
 extern void App_RotateCurrStep(void) {
   CurrStep = App_NextStep();
-  Screen_UpdateCurrStep();
   if (CurrStatus == App_Status_Started)
     SN74HC595_SetBlink(CurrStep);
   if (CurrMode == App_Mode_Play && CurrStep == 1) {

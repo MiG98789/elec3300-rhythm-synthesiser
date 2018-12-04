@@ -48,7 +48,7 @@ static void InitDAC(void) {
   
   DAC_InitStruct.DAC_Trigger = DAC_Trigger_T6_TRGO;
   DAC_InitStruct.DAC_WaveGeneration = DAC_WaveGeneration_None;
-  DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Enable;
+  DAC_InitStruct.DAC_OutputBuffer = DAC_OutputBuffer_Disable;
   DAC_Init(DAC_Channel_1, &DAC_InitStruct);
 
   DAC_DMACmd(DAC_Channel_1, ENABLE);
